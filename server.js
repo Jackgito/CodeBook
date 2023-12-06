@@ -1,9 +1,9 @@
 //https://docs.google.com/document/d/1zSfVZcnv7FUnu6VxwKLXBPZHqTIdRX1w3d9Yer_mKVU/edit#heading=h.z9sfsn1d1vz6
 
-const express = require("express");
-const bcrypt = require('bcrypt'); // Used for password hashing
-const mongoose = require("mongoose");
-const passport = require("passport");
+const express = require("express");   // For server communication
+const bcrypt = require('bcrypt');     // For password hashing
+const mongoose = require("mongoose"); // For database management
+const passport = require("passport"); // For authentication
 const path = require("path");
 
 const Question = require('./models/Question')
@@ -29,11 +29,11 @@ app.use('/', questionsRouter);
 mongoose.connect("mongodb://127.0.0.1:27017/codeshare")
 
 // Passport for authentication
-const initializePassport = require("./passport-config")
+const initializePassport = require('./passport-config')
 initializePassport(
   passport,
-  async email => await User.findOne({ email }),
-  async id => await User.findById(id),
+  email => users.find(user => user.email === email),
+  id => users.find(user => user.id === id)
 )
 
 // Serve static files from the "public" directory

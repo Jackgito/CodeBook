@@ -14,30 +14,35 @@
           <!-- Name -->
           <div class="input-field">
             <i class="material-icons prefix">account_circle</i>
-            <input id="username" type="text" name="username" class="validate" required>
+            <input id="username" type="text" name="username" required>
             <label for="username">Username</label>
+            <span hidden class="helper-text" id="invalidUsername"></span>
           </div>
 
           <!-- Email Form -->
           <div class="input-field">
             <i class="material-icons prefix">email</i>
-            <input id="email" type="email" class="validate">
+            <input id="email" type="email" name="email"">
             <label for="email">Email</label>
+            <span hidden class="helper-text" id="invalidEmail"></span>
           </div>
           
           <!-- Password -->
           <div class="input-field">
             <i class="material-icons prefix">lock</i>
-            <input id="password" type="password" class="validate">
+            <input id="password" type="password" name="password">
             <label for="password">Password</label>
+            <span class="helper-text" id="invalidPassword"></span>
           </div>
 
-          <p>Password must contain at least eight characters, including at least 1 letter and 1 number.</p>
+          
 
           <button type="submit" class="btn blue">Sign up</button>
         </div>
       </form>
     </div>
+
+  <script type="text/javascript" src="/javascripts/signUp.js"></script>
 
   </body>
 </html>
