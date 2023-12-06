@@ -1,0 +1,15 @@
+body {
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+.nav-wrapper {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+#loginBtn, #signUpBtn, #homeBtn {
+  font-size: 20px;
+}
+
+/* Media query for smaller screens (e.g., mobile devices) */
+

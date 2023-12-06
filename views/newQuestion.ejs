@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+    <%- include("./partials/head", { title: "New question", stylesheet: "../../stylesheets/newQuestion.css" }) %>
+
+    <body>
+        <%- include("./partials/navbar") %>
+        
+        <div class="pageContainer">
+            <h4>Ask a public question</h4>
+
+            <form id="questionForm" method="POST">
+                <div>
+                  <label for="title" class="label">Title:</label>
+                  <input id="title" name="title" required>
+                </div>
+              
+                <div>
+                  <label for="question" class="label">Question:</label>
+                  <textarea id="question" name="question" rows="4" required class="materialize-textarea"></textarea>
+                </div>
+              
+                <button type="submit" class="btn blue">Submit</button>
+            </form>
+
+        </div>
+
+        <script src="/javascripts/newQuestion.js"></script>
+    </body>
+</html>

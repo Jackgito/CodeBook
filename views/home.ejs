@@ -1,0 +1,60 @@
+<!-- index.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+  <%- include("./partials/head", { title: "Home page", stylesheet: "stylesheets/home.css" }) %>
+
+  <body>
+    <%- include("./partials/navbar") %>
+
+    <div class="pageContainer">
+      <div class="row">
+        <div class="col s12">
+          <a href="questions/new/question" class="waves-effect waves-light btn blue">Ask Question</a>
+
+          <% posts.forEach(post => { %>
+            <div class="card">
+              <div class="card-content">
+                <div class="row">
+                  <!-- Left Column (10%) -->
+                  <div class="col s1" style="width: 10%;">
+                    <span class="card-title">
+                      <p class="votes" id="votes"><%= post.votes %> votes</p>
+                      <p class="views" id="views"><%= post.views %> views</p>
+                    </span>
+                  </div>
+                              
+                  <!-- Middle Column (65%) -->
+                  <div class="col s7" style="width: 65%;">
+                    <span class="card-title">
+                      <!-- Create a link with data attributes -->
+                      <a href="#" class="title" id="title" 
+                        onclick="loadQuestion('<%= post.url %>', '<%= encodeURIComponent(post.question) %>', '<%= post.votes %>', '<%= post.views %>', '<%= encodeURIComponent(post.author) %>', '<%= encodeURIComponent(post.tags.join(',')) %>', '<%= encodeURIComponent(post.comments.join(',')) %>')">
+                        <%= post.title %>
+                      </a>
+                      <p class="question" id="question"><%= post.question %></p>
+                    </span>
+                    <!-- Hidden field for comments -->
+                    <input type="hidden" class="comments" value="<%= encodeURIComponent(post.comments.join(',')) %>">
+                  </div>
+
+                  <!-- Right Column (25%) -->
+                  <div class="col s4" style="width: 25%;">
+                    <span class="card-title">
+                      <p class="author" id="author"><%= post.author %> asked at <%= post.createdAt.toLocaleDateString() %></p>
+                      <p class="tags" id="tags"><%= post.tags %></p>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    </div>
+    
+    <%- include("./partials/footer") %>
+    
+    <script type="text/javascript" src="/javascripts/home.js"></script>
+
+  </body>
+</html>

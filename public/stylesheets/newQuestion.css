@@ -1,0 +1,21 @@
+.pageContainer {
+    margin: 2vh;
+}
+
+.label {
+    font-size: 20px;
+}
+
+div {
+    margin-bottom: 15px; /* Adjust the value as needed */
+}
+
+:root {
+    --focus-color: #2196F3; /* Blue color */
+}
+
+/* label underline focus color */
+#question:focus, #title:focus {
+    border-bottom: 1px solid var(--focus-color) !important;
+    box-shadow: 0 1px 0 0 var(--focus-color) !important;
+}

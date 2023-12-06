@@ -1,0 +1,39 @@
+.loginContainer {
+  margin: auto;
+  margin-top: 25vh;
+  background-color: #fff;
+  border-radius: 8px;
+  border: 2px solid black;
+  width: 300px;
+  padding: 20px;
+}
+
+button {
+  width: 100%;
+}
+
+#formTitle {
+  margin-top: 0;
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+/* Define color variable */
+:root {
+  --focus-color: #2196F3; /* Blue color */
+}
+
+/* label focus color */
+.input-field input:focus + label {
+  color: var(--focus-color) !important;
+}
+/* label underline focus color */
+.input-field input:focus {
+  border-bottom: 1px solid var(--focus-color) !important;
+  box-shadow: 0 1px 0 0 var(--focus-color) !important;
+}
+
+/* icon prefix focus color */
+.input-field .prefix.active {
+  color: var(--focus-color) !important;
+}
