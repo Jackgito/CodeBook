@@ -1,6 +1,4 @@
-function loadQuestion(url, question, votes, views, author, tags, comments) {
-  // Parse comments as an array
-  comments = comments.split(',');
+function loadQuestion(url) {
 
   // Make an AJAX GET request to the backend
   const xhr = new XMLHttpRequest();

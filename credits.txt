@@ -1,1 +1,0 @@
-The authentication functionality is based on this video from Web Dev Simplified: https://www.youtube.com/watch?v=-RCnNyD0L-s

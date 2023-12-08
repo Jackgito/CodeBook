@@ -1,1 +1,6 @@
 Login
+
+Test user:
+Test
+test@mail.com
+password1

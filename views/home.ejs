@@ -9,8 +9,10 @@
     <div class="pageContainer">
       <div class="row">
         <div class="col s12">
-          <a href="questions/new/question" class="waves-effect waves-light btn blue">Ask Question</a>
-
+          <div class="center-align">
+            <a href="questions/new/question" class="waves-effect waves-light btn blue">Ask Question</a>
+          </div>
+          
           <% posts.forEach(post => { %>
             <div class="card">
               <div class="card-content">
@@ -28,12 +30,13 @@
                     <span class="card-title">
                       <!-- Create a link with data attributes -->
                       <a href="#" class="title" id="title" 
-                        onclick="loadQuestion('<%= post.url %>', '<%= encodeURIComponent(post.question) %>', '<%= post.votes %>', '<%= post.views %>', '<%= encodeURIComponent(post.author) %>', '<%= encodeURIComponent(post.tags.join(',')) %>', '<%= encodeURIComponent(post.comments.join(',')) %>')">
+                        onclick="loadQuestion('<%= post.url %>')">
                         <%= post.title %>
                       </a>
                       <p class="question" id="question"><%= post.question %></p>
                     </span>
-                    <!-- Hidden field for comments -->
+
+                    <!-- Hidden field for comments, so they can be trasnferred to the question pages -->
                     <input type="hidden" class="comments" value="<%= encodeURIComponent(post.comments.join(',')) %>">
                   </div>
 

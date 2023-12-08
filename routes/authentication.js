@@ -6,19 +6,77 @@ const router = express.Router();
 
 const User = require('../models/User');
 
+const LocalStrategy = require('passport-local').Strategy;
+
+// Passport local strategy configuration
+passport.use(new LocalStrategy({
+    usernameField: 'email',
+    passwordField: 'password'
+  },
+  async (email, password, done) => {
+    try {
+      // Find the user by email in the database
+      const user = await User.findOne({ email });
+
+      // If the user is not found or the password is incorrect, return an error
+      if (!user || !(await bcrypt.compare(password, user.password))) {
+        return done(null, false, { message: 'Incorrect email or password' });
+      }
+
+      // If the credentials are valid, return the user object
+      return done(null, user);
+    } catch (error) {
+      return done(error);
+    }
+  }
+));
+
+// Serialize user information for session
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+
+// Deserialize user from session
+passport.deserializeUser(async (id, done) => {
+  try {
+    const user = await User.findById(id);
+    done(null, user);
+  } catch (error) {
+    done(error);
+  }
+});
+
 router.get("/login", (req, res) => {
-    res.render("login");
-})
+  res.render("login");
+});
   
 router.get("/signUp", (req, res) => {
     res.render("signUp");
 })
 
-router.post("/login", passport.authenticate("local", {
-    successRedirect: "/",
-    failureRedirect: "/login",
-    failureFlash: true
-}))
+// Handle the login
+router.post('/login', (req, res, next) => {
+  passport.authenticate('local', (err, user, info) => {
+    if (err) {
+      return next(err);
+    }
+
+    if (!user) {
+      // Authentication failed, store a flash message
+      req.flash('error', 'Invalid email or password');
+      return res.redirect('/login');
+    }
+
+    // Authentication succeeded
+    req.logIn(user, (err) => {
+      if (err) {
+        return next(err);
+      }
+      return res.redirect('/');
+    });
+  })(req, res, next);
+});
+
 
 router.post('/signUp', async (req, res) => {
   try {
