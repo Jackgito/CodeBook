@@ -10,24 +10,19 @@
     font-size: 20px;
 }
 
-.pageContainer {
-    margin: 20px;
-
-}
-
-.card-content {
-    margin: 20px;
-}
-
 #post {
     font-size: 24px;
 }
 
-.row {
-    max-width: 1000px;
+.pageContainer {
+    margin: 20px;
 }
 
 .card-content {
     margin: 0px;
     padding: 10px !important;
+}
+
+.row {
+    max-width: 1000px;
 }
