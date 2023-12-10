@@ -1,12 +1,24 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const passport = require('passport');
+const session = require('express-session');
+const flash = require('connect-flash');
 
 const router = express.Router();
 
 const User = require('../models/User');
 
 const LocalStrategy = require('passport-local').Strategy;
+
+router.use(flash());
+router.use(session({
+  secret: "miX2405H5V8VYlQl8nVx", // Change this to a strong, randomly generated key
+  resave: true,
+  saveUninitialized: true
+}));
+
+router.use(passport.initialize()); // Initialize Passport on the router
+router.use(passport.session()); 
 
 // Passport local strategy configuration
 passport.use(new LocalStrategy({
@@ -47,12 +59,18 @@ passport.deserializeUser(async (id, done) => {
 });
 
 router.get("/login", (req, res) => {
+  if (req.isAuthenticated()) {
+    return res.redirect("/");
+  }
   res.render("login");
 });
-  
+
 router.get("/signUp", (req, res) => {
-    res.render("signUp");
-})
+  if (req.isAuthenticated()) {
+    return res.redirect("/");
+  }
+  res.render("signUp");
+});
 
 // Handle the login
 router.post('/login', (req, res, next) => {
@@ -62,9 +80,9 @@ router.post('/login', (req, res, next) => {
     }
 
     if (!user) {
-      // Authentication failed, store a flash message
-      req.flash('error', 'Invalid email or password');
-      return res.redirect('/login');
+      // Authentication failed, send a flash message to login page
+      req.flash('error', 'Invalid email or password.');
+      return res.render('login', { messages: req.flash() });
     }
 
     // Authentication succeeded
@@ -72,11 +90,46 @@ router.post('/login', (req, res, next) => {
       if (err) {
         return next(err);
       }
-      return res.redirect('/');
+      return res.render('home', { userLoggedIn: req.user });
     });
   })(req, res, next);
 });
 
+router.post('/signUp', async (req, res) => {
+  try {
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+
+    // Create a new User instance using the User model
+    const newUser = new User({
+      username: req.body.username,
+      email: req.body.email,
+      password: hashedPassword,
+    });
+
+    try {
+      // Save the user to the MongoDB collection named "users"
+      await newUser.save();
+      req.flash('success', 'Successfully signed up.'); // Optional success message
+      res.render('login', { success: 'Successfully signed up.', messages: req.flash() });
+    } catch (error) {
+      // Handle uniqueness constraint violation
+      if (error.code === 11000 && error.keyPattern && error.keyPattern.email) {
+        console.error('Error creating user:', error);
+        req.flash('error', 'Email already exists.');
+        res.render('signUp', { error: 'Email already exists.', messages: req.flash() }); // Pass flash messages to the view
+      } else if (error.code === 11000 && error.keyPattern && error.keyPattern.username) {
+        console.error('Error creating user:', error);
+        req.flash('error', 'Username already exists');
+        res.render('signUp', { error: 'Username already exists.', messages: req.flash() }); // Pass flash messages to the view
+      } else {
+        throw error;
+      }
+    }
+  } catch (error) {
+    console.error('Error creating user:', error);
+    res.redirect('/signUp');
+  }
+});
 
 router.post('/signUp', async (req, res) => {
   try {
@@ -97,12 +150,12 @@ router.post('/signUp', async (req, res) => {
       // Handle uniqueness constraint violation
       if (error.code === 11000 && error.keyPattern && error.keyPattern.email) {
         console.error('Error creating user:', error);
-        res.render('signUp', { error: 'Email already exists' });
+        res.render('signUp', { message: 'Email already exists' });
       } else if (error.code === 11000 && error.keyPattern && error.keyPattern.username) {
         console.error('Error creating user:', error);
-        res.render('signUp', { error: 'Username already exists' });
+        res.render('signUp', { message: 'Username already exists' });
       } else {
-        throw error; // Rethrow other errors
+        throw error;
       }
     }
     } catch (error) {
@@ -130,5 +183,12 @@ router.get('/check-unique', async (req, res) => {
   }
 });
 
+const ensureAuthenticated = (req, res, next) => {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  req.flash('error', "You must be logged in to post questions.");
+  res.render('login', { messages: req.flash() }); // Redirect to the login page if not authenticated
+};
 
-module.exports = router;
+module.exports = { router, ensureAuthenticated };

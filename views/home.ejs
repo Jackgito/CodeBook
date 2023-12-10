@@ -10,7 +10,12 @@
       <div class="row">
         <div class="col s12">
           <div class="center-align">
-            <a href="questions/new/question" class="waves-effect waves-light btn blue">Ask Question</a>
+            <%
+            // Check if userLoggedIn is defined before using it
+            const userLoggedInQueryParam = typeof userLoggedIn !== 'undefined' ? `?userLoggedIn=${userLoggedIn}` : '';
+          %>
+          
+          <a href="questions/new/question<%= userLoggedInQueryParam %>" class="waves-effect waves-light btn blue">Ask Question</a>
           </div>
           
           <% posts.forEach(post => { %>

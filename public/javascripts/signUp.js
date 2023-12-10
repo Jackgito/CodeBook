@@ -77,9 +77,9 @@ document.addEventListener('DOMContentLoaded', function () {
   // Debounced event listener for email input
   emailInput.addEventListener('input', debounce(async () => {
   const isValidSyntax = validateEmailSyntax();
-  const isUnique = await checkEmailUniqueness(); // Wait for the asynchronous function to complete
+  //const isUnique = await checkEmailUniqueness(); // Wait for the asynchronous function to complete
 
-  if (isValidSyntax && isUnique) {
+  if (isValidSyntax) {
     invalidEmailHelper.hidden = true;
     invalidEmailHelper.textContent = '';
     emailInput.classList.remove('invalid');

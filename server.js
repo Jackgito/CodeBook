@@ -1,11 +1,8 @@
 //https://docs.google.com/document/d/1zSfVZcnv7FUnu6VxwKLXBPZHqTIdRX1w3d9Yer_mKVU/edit#heading=h.z9sfsn1d1vz6
 
 const express = require("express");   // For server communication
-const bcrypt = require('bcrypt');     // For password hashing
 const mongoose = require("mongoose"); // For database management
 const passport = require("passport"); // For authentication
-const session = require('express-session');
-const flash = require('express-flash')
 const path = require("path");
 
 const initializePassport = require('./passport-config')
@@ -22,7 +19,8 @@ app.set("view engine", "ejs");
 app.set('views', path.join(__dirname, 'views'));
 
 // Routes
-const authenticationRouter = require('./routes/authentication');
+const { router: authenticationRouter} = require('./routes/authentication');
+
 const questionsRouter = require('./routes/questions');
 
 app.use(express.urlencoded({ extended: false }));
@@ -39,18 +37,10 @@ mongoose.connect("mongodb://127.0.0.1:27017/codeshare")
   console.log('Mongoose connection failed');
 })
 
-// Configure express-session
-
 // Initialize Passport
 initializePassport(passport);
 
 // Middleware
-app.use(flash());
-app.use(session({
-  secret: "miX2405H5V8VYlQl8nVx", // Change this to a strong, randomly generated key
-  resave: true,
-  saveUninitialized: true
-}));
 app.use(passport.initialize());
 app.use(passport.session());
 

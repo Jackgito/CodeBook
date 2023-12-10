@@ -3,7 +3,6 @@
 <body>
   <%- include("./partials/navbar") %>
 
-
   <div class="loginContainer">
     <!-- Login Form -->
     <form action="/login" method="POST" class="col s12">
@@ -23,13 +22,18 @@
         <label for="password">Password</label>
       </div>
 
-      <% if (typeof messages == 'object' && messages && messages.error) { %>
-        <div class="error">
-          <%= messages.error %>
-        </div>
+      <button type="submit" class="btn blue">Log in</button>
+
+      <!-- Error message -->
+      <% if (typeof messages === "object" && messages && messages.error) { %>
+        <p class="red-text center-align"><%= messages.error %></p>
       <% } %>
 
-      <button type="submit" class="btn blue">Log in</button>
+      <!-- Success message -->
+      <% if (typeof messages === "object" && messages && messages.success) { %>
+        <p class="green-text center-align"><%= messages.success %></p>
+      <% } %>
+
     </form>
   </div>
 </body>

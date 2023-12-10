@@ -1,10 +1,17 @@
 const express = require("express");
-const router = express.Router();
+const passport = require('passport');
+const session = require('express-session');
 const Question = require("../models/Question")
+const router = express.Router();
+
+router.use(passport.initialize());
+router.use(passport.session());
+
+const ensureAuthenticated = require('./authentication').ensureAuthenticated;
 
 // Ask new question
-router.get('/questions/new/question', (req, res) => {
-    res.render('newQuestion')
+router.get('/questions/new/question', ensureAuthenticated, (req, res) => {
+  res.render('newQuestion');
 });
 
 // Edit question (WIP)

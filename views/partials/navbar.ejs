@@ -7,17 +7,27 @@
 
     <div class="navbar-fixed">
         <nav class="nav-wrapper blue">
-            <div class="container"></div>
+            <div class="container">
 
-                <a href="" class="brand-logo">Codebook</a>
+                <a href="/" class="brand-logo">Codebook</a>
                 <a href="#" class="sidenav-trigger right" data-target="mobile-links">
                     <i class="material-icons">menu</i>
                 </a>
         
-                <ul class="right  hide-on-med-and-down">
+                <ul class="right hide-on-med-and-down">
                     <li><a href="/" id="homeBtn">Home</a></li>
-                    <li><a href="/login" id="loginBtn">Log in</a></li>
-                    <li><a href="/signUp" id="signUpBtn">Sign up</a></li>
+                    
+                    <% if (typeof userLoggedIn === 'object' && userLoggedIn) { %>
+                        <!-- If user is logged in, show logout and profile -->
+                        <li><a href="/logout" id="logoutBtn">Log out</a></li>
+                        <!-- <li><a href="/profile" id="profileBtn"><i class="material-icons">account_circle</i></a></li> -->
+                    <% } else { %>
+                        <!-- If user is not logged in, show login and signup -->
+                        <li><a href="/login" id="loginBtn">Log in</a></li>
+                        <li><a href="/signUp" id="signUpBtn">Sign up</a></li>
+                    <% } %>
+                    
+                    
                 </ul>
 
             </div>
@@ -26,8 +36,16 @@
 
     <ul class="sidenav" id="mobile-links">
         <li><a href="/" id="homeBtn">Home</a></li>
-        <li><a href="/login" id="loginBtn">Log in</a></li>
-        <li><a href="/signUp" id="signUpBtn">Sign up</a></li>
+
+        <% if (typeof userLoggedIn === 'object' && userLoggedIn) { %>
+            <!-- If user is logged in, show logout and profile -->
+            <li><a href="/logout" id="logoutBtn">Logout</a></li>
+            <li><a href="/profile" id="profileBtn"><i class="material-icons">account_circle</i></a></li>
+        <% } else { %>
+            <!-- If user is not logged in, show login and signup -->
+            <li><a href="/login" id="loginBtn">Log in</a></li>
+            <li><a href="/signUp" id="signUpBtn">Sign up</a></li>
+        <% } %>
     </ul>
 
     <script>
