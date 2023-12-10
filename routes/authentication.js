@@ -4,6 +4,9 @@ const passport = require('passport');
 const session = require('express-session');
 const flash = require('connect-flash');
 
+const { renderHomePage } = require('../functions/renderHomePage');
+const { renderLoginPage } = require('../functions/renderLoginPage');
+
 const router = express.Router();
 
 const User = require('../models/User');
@@ -59,15 +62,18 @@ passport.deserializeUser(async (id, done) => {
 });
 
 router.get("/login", (req, res) => {
-  if (req.isAuthenticated()) {
-    return res.redirect("/");
+  const isAuthenticated = req.isAuthenticated()
+  if (isAuthenticated) {
+    return res.render('home', { posts, isAuthenticated});
   }
+
   res.render("login");
 });
 
 router.get("/signUp", (req, res) => {
-  if (req.isAuthenticated()) {
-    return res.redirect("/");
+  const isAuthenticated = req.isAuthenticated()
+  if (isAuthenticated) {
+    return res.render('home', { posts, isAuthenticated});
   }
   res.render("signUp");
 });
@@ -90,7 +96,8 @@ router.post('/login', (req, res, next) => {
       if (err) {
         return next(err);
       }
-      return res.render('home', { userLoggedIn: req.user });
+      // Render the home page
+      renderHomePage(req, res, req.isAuthenticated());
     });
   })(req, res, next);
 });
@@ -181,6 +188,16 @@ router.get('/check-unique', async (req, res) => {
     // Send a JSON response with an error message
     res.status(500).json({ error: 'Internal Server Error' });
   }
+});
+
+router.get('/logout', (req, res) => {
+  req.logout((err) => {
+    if (err) {
+      console.error('Error logging out:', err);
+      return res.status(500).send('Internal Server Error');
+    }
+    res.redirect('/login');
+  });
 });
 
 const ensureAuthenticated = (req, res, next) => {

@@ -1,9 +1,13 @@
 <!-- question.ejs -->
 
 <%- include("./partials/head", { title: "Log in", stylesheet: "/stylesheets/question.css" }) %>
-<%- include("./partials/navbar") %>
 
 <body>
+  <% if (typeof isAuthenticated === 'boolean' && isAuthenticated) { %>
+    <%- include('./partials/navbarLoggedIn') %>
+  <% } else { %>
+    <%- include('./partials/navbarGuest') %>
+  <% } %>
 
   <div class="pageContainer">
     <div class="row">

@@ -4,18 +4,23 @@
   <%- include("./partials/head", { title: "Home page", stylesheet: "stylesheets/home.css" }) %>
 
   <body>
-    <%- include("./partials/navbar") %>
+
+    <% if (typeof isAuthenticated === 'boolean' && isAuthenticated) { %>
+      <%- include('./partials/navbarLoggedIn') %>
+    <% } else { %>
+      <%- include('./partials/navbarGuest') %>
+    <% } %>
 
     <div class="pageContainer">
       <div class="row">
         <div class="col s12">
           <div class="center-align">
-            <%
-            // Check if userLoggedIn is defined before using it
-            const userLoggedInQueryParam = typeof userLoggedIn !== 'undefined' ? `?userLoggedIn=${userLoggedIn}` : '';
-          %>
           
-          <a href="questions/new/question<%= userLoggedInQueryParam %>" class="waves-effect waves-light btn blue">Ask Question</a>
+          <% if (isAuthenticated) { %>
+              <a href="questions/new/question" class="waves-effect waves-light btn blue">Ask Question</a>
+          <% } else { %>
+              <a href="login" class="waves-effect waves-light btn blue">Log in to ask question</a>
+          <% } %>
           </div>
           
           <% posts.forEach(post => { %>

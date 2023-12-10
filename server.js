@@ -5,10 +5,13 @@ const mongoose = require("mongoose"); // For database management
 const passport = require("passport"); // For authentication
 const path = require("path");
 
+const Question = require('./models/Question');
+//const { renderHomePage } = require('./functions/renderHomePage');
+
+
 const initializePassport = require('./passport-config')
 
 // Import models
-const Question = require('./models/Question')
 const User = require('./models/User');
 
 const app = express();
@@ -74,9 +77,15 @@ app.use(express.static("public"));
 app.use(express.urlencoded({ extended: false }));
 
 app.get('/', async (req, res) => {
-  const posts = await Question.find().sort({ createdAt: 'desc' })
-  res.render('home', { posts: posts })
-})
+  try {
+    const posts = await Question.find().sort({ createdAt: 'desc' });
+    const isAuthenticated = req.isAuthenticated()
+    res.render('home', { posts, isAuthenticated});
+  } catch (error) {
+    console.error('Error rendering home page:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
 
 app.listen(PORT, () => {
   console.log("Server is running on port " + PORT);

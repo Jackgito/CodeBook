@@ -11,17 +11,19 @@ const ensureAuthenticated = require('./authentication').ensureAuthenticated;
 
 // Ask new question
 router.get('/questions/new/question', ensureAuthenticated, (req, res) => {
-  res.render('newQuestion');
+  const isAuthenticated = req.isAuthenticated()
+  res.render('newQuestion', {isAuthenticated: isAuthenticated});
 });
 
 // Edit question (WIP)
 router.get('/questions/edit/:id', async (req, res) => {
-    const question = await Question.findById(req.params.id)
-    res.render('questions/edit', { question: question })
+  const isAuthenticated = req.isAuthenticated()
+  res.render('newQuestion', {isAuthenticated: isAuthenticated});
 });
 
 // Render existing question page
 router.get('/questions/:url', async (req, res) => {
+  const isAuthenticated = req.isAuthenticated()
   try {
     const url = encodeURIComponent(req.params.url); // For some reason the url needs to be encoded again
     // Find the question with the matching decoded URL in your MongoDB collection
@@ -39,7 +41,8 @@ router.get('/questions/:url', async (req, res) => {
       tags: question.tags,
       views: question.views,
       votes: question.votes,
-      comments: question.comments
+      comments: question.comments,
+      isAuthenticated: isAuthenticated
     });
   } catch (error) {
     console.error(error);
