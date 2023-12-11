@@ -1,0 +1,7 @@
+Questions:
+Best way to pass data from route/server to the JS file
+
+Test user:
+Test
+test@mail.com
+password1

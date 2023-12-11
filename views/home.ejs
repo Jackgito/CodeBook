@@ -30,8 +30,23 @@
                   <!-- Left Column (10%) -->
                   <div class="col s1" style="width: 10%;">
                     <span class="card-title">
-                      <p class="votes" id="votes"><%= post.votes %> votes</p>
-                      <p class="views" id="views"><%= post.views %> views</p>
+                      
+                      <p class="votes" id="votes">
+                        <% if (post.votes >= 1000) { %>
+                          <%= (post.votes / 1000).toFixed(1) %>k votes
+                        <% } else { %>
+                          <%= post.votes %> votes
+                        <% } %>
+                      </p>
+                      
+                      <p class="views" id="views">
+                        <% if (post.views >= 1000) { %>
+                          <%= (post.views / 1000).toFixed(1) %>k views
+                        <% } else { %>
+                          <%= post.views %> views
+                        <% } %>
+                      </p>
+                      
                     </span>
                   </div>
                               
@@ -43,7 +58,10 @@
                         onclick="loadQuestion('<%= post.url %>')">
                         <%= post.title %>
                       </a>
-                      <p class="question" id="question"><%= post.question %></p>
+                      <!-- Shorten long questions -->
+                      <p class="question" id="question">
+                        <%= post.question.length > 100 ? post.question.slice(0, 100) + '...' : post.question %>
+                      </p>
                     </span>
 
                     <!-- Hidden field for comments, so they can be trasnferred to the question pages -->

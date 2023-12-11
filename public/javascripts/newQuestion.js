@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const form = document.getElementById('questionForm');
 
     document.getElementById('questionForm').addEventListener('submit', function(event) {
         // Prevent the default form submission
@@ -22,11 +21,9 @@ document.addEventListener('DOMContentLoaded', function () {
         // Encode the title using encodeURIComponent
         const encodedTitle = encodeURIComponent(titleValue);
     
-        // Replace spaces with "-"
-        const formattedTitle = encodedTitle.replace(/\s+/g, '-');
     
-        // Set the form action dynamically with the formatted title
-        this.action = '/questions/' + formattedTitle;
+        // Set the form action dynamically
+        this.action = '/questions/' + encodedTitle;
     
         // Now submit the form
         this.submit();

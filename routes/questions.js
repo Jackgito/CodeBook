@@ -16,22 +16,27 @@ router.get('/questions/new/question', ensureAuthenticated, (req, res) => {
 });
 
 // Edit question (WIP)
-router.get('/questions/edit/:id', async (req, res) => {
+router.get('/questions/edit/:title', async (req, res) => {
   const isAuthenticated = req.isAuthenticated()
   res.render('newQuestion', {isAuthenticated: isAuthenticated});
 });
 
-// Render existing question page
-router.get('/questions/:url', async (req, res) => {
-  const isAuthenticated = req.isAuthenticated()
-  try {
-    const url = encodeURIComponent(req.params.url); // For some reason the url needs to be encoded again
-    // Find the question with the matching decoded URL in your MongoDB collection
-    const question = await Question.findOne({ url: url });
+// Delete question (WIP)
+router.delete('/questions/:title', async (req, res) => {
+  await Question.findByTitleAndDelete(req.params.title);
+  res.redirect('/');
+});
 
-    if (!question) {
-      return res.status(404).send('Question not found');
-    }
+// Render existing question page
+router.get('/questions/:title', async (req, res) => {
+  let isAuthenticated = req.isAuthenticated()
+
+  try {
+    // Find question from the database based on the title
+    const question = await fetchQuestion(req.params.title)
+    question.views += 1; // Increase view count by one
+    await question.save();
+    timeSincePost = timeSince(question.createdAt)
 
     // Render the 'question' template and pass data to it
     res.render('question', {
@@ -42,7 +47,9 @@ router.get('/questions/:url', async (req, res) => {
       views: question.views,
       votes: question.votes,
       comments: question.comments,
-      isAuthenticated: isAuthenticated
+      isAuthenticated: isAuthenticated,
+      timeSincePost: timeSincePost,
+      questionObject: question
     });
   } catch (error) {
     console.error(error);
@@ -51,7 +58,7 @@ router.get('/questions/:url', async (req, res) => {
 });
 
 // Save a new question
-router.post('/questions/:id', async (req, res) => {
+router.post('/questions/:title', async (req, res) => {
     try {
         // Create a new Question instance
         const newQuestion = new Question({
@@ -72,16 +79,60 @@ router.post('/questions/:id', async (req, res) => {
         // Construct the formatted title for redirection
         const formattedTitle = encodeURIComponent(req.body.title);
 
-        // Redirect to /questions/:id with the formatted title if save is successful
+        // Redirect to /questions/:title with the formatted title if save is successful
         res.redirect(`/questions/${formattedTitle}`);
     } catch (error) {
         console.error('Error saving question:', error);
     }
 });
 
-router.delete('/questions/:id', async (req, res) => {
-    await Question.findByIdAndDelete(req.params.id);
-    res.redirect('/');
+// Define a route to handle vote updates
+router.post('/updateVotes', async (req, res) => {
+  try {
+    const { questionId, voteValue } = req.body;
+
+    // Find the question in the database by ID and update the votes
+    const question = await Question.findByIdAndUpdate(questionId, { $inc: { votes: voteValue } }, { new: true });
+
+    res.json({ success: true, question });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, error: 'Internal Server Error' });
+  }
 });
+
+async function fetchQuestion(title) {
+  try {
+    const question = await Question.findOne({ title });
+    return question;
+  } catch (error) {
+    return res.status(404).send('Question not found');
+  }
+}
+
+function timeSince(date) {
+  const currentDate = new Date();
+  const pastDate = new Date(date);
+
+  const years = currentDate.getFullYear() - pastDate.getFullYear();
+  const months = currentDate.getMonth() - pastDate.getMonth();
+  const days = currentDate.getDate() - pastDate.getDate();
+
+  let result = '';
+
+  if (years > 0) {
+      result += `${years} ${years === 1 ? 'year' : 'years'}`;
+  }
+
+  if (months > 0) {
+      result += `${result ? ', ' : ''}${months} ${months === 1 ? 'month' : 'months'}`;
+  }
+
+  if (days > 0) {
+      result += `${result ? ', ' : ''}${days} ${days === 1 ? 'day' : 'days'}`;
+  }
+
+  return result ? result + ' ago' : 'just now';
+}
 
 module.exports = router;

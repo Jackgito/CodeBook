@@ -1,7 +1,18 @@
+* {
+    font-size: 16px;
+}
+
 .pageContainer {
     margin: 2vh;
 }
 
 .votes {
     margin-top: 20px;
+}
+
+.postMetadata {
+    display: flex; /* Use flexbox to place items in a row */
+    justify-content: space-between; /* Add space between the paragraphs */
+    align-items: center; /* Align items vertically in the center */
+    margin-bottom: 20px;
 }
