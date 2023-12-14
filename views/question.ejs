@@ -1,13 +1,16 @@
 <!-- question.ejs -->
 
+<!DOCTYPE html>
+<html lang="en">
+
 <%- include("./partials/head", { title: "Log in", stylesheet: "/stylesheets/question.css" }) %>
 
 <body>
   <!-- These values are used in the JS file -->
   <div id="isAuthenticated" isAuthenticated="<%= isAuthenticated?.value %>"></div>
   <div id="username" username="<%= isAuthenticated?.username %>"></div>
-  <div id="questionID" questionID="<%= question.id %>"</div>
-  <div id="userID" userID="<%= isAuthenticated.userID %>"</div>
+  <div id="questionID" questionID="<%= question.id %>"></div>
+  <div id="userID" userID="<%= isAuthenticated.userID %>"></div>
 
   <% if (isAuthenticated && isAuthenticated.value) { %>
     <%- include('./partials/navbarLoggedIn') %>
@@ -32,37 +35,48 @@
                 <p id="voteCount">Votes: <%= question.votes || 0 %></p>
                 <p id="loginMessage" style="display: none;">Log in to vote.</p>
                 <p id="clickMessage" style="display: none;">You have exceeded the vote limit.</p>
-                <a class="btn-floating waves-effect waves-light blue" id="thumbsUp"><i class="material-icons">thumb_up</i></a>
-                <a class="btn-floating waves-effect waves-light blue" id="thumbsDown"><i class="material-icons">thumb_down</i></a>
+                <a class="btn-floating waves-effect waves-light" id="thumbsUp"><i class="material-icons">thumb_up</i></a>
+                <a class="btn-floating waves-effect waves-light" id="thumbsDown"><i class="material-icons">thumb_down</i></a>
 
                 <% if (isAuthenticated.user == question.author) { %>
-                  <a href="questions/edit/<%= question.title %>" class="waves-effect waves-light btn blue">Edit</a>
-                  <a href="questions/delete/<%= question.title %>" class="waves-effect waves-light btn blue">Delete</a>
+                  <a href="questions/edit/<%= question.title %>" class="waves-effect waves-light btn">Edit</a>
+                  <a href="questions/delete/<%= question.title %>" class="waves-effect waves-light btn">Delete</a>
                 <% } %>
               </div>
             </div>
           </div>
 
-          <h4>Comments</h4>
 
-          <% if (question.comments && question.comments.length > 0) { %>
-            <% question.comments.forEach(comment => { %>
+          <% if (question.answers && question.answers.length > 0) { %>
+            <h4>Answers</h4>
+            <% question.answers.forEach(answer => { %>
               <div class="card">
                 <div class="card-content">
                   <span class="card-title">
                     <ul>
-                      <li>Comment: <%= comment.comment %></li>
-                      <li>Author: <%= comment.author %></li>
-                      <li>Votes: <%= comment.votes %></li>
-                      <li>Created At: <%= comment.createdAt %></li>
+                      <li>Answer: <%= answer.answer %></li>
+                      <li>Author: <%= answer.author %></li>
+                      <li>Votes: <%= answer.votes %></li>
+                      <li>Created At: <%= answer.createdAt %></li>
                     </ul>
                   </span>
                 </div>
               </div>
             <% }); %>
-          <% } else { %>
-            <p>No comments available.</p>
           <% } %>
+
+          <!-- Add an answer form for authenticated users -->
+          <% if (isAuthenticated.value) { %>
+            <form action="/addAnswer" method="POST">
+              <div class="input-field">
+                <i class="material-icons prefix">mode_comment</i>
+                <textarea id="answer" class="materialize-textarea" name="answer" required></textarea>
+                <label for="answer">Your Answer</label>
+              </div>
+              <button type="submit" class="btn">Submit Answer</button>
+            </form>
+          <% } %>
+
         <% } else { %>
           <p>No question available.</p>
         <% } %>

@@ -18,6 +18,10 @@
     margin: 20px;
 }
 
+#questionBtn {
+    margin: 20px;
+}
+
 .card-content {
     margin: 0px;
     padding: 10px !important;

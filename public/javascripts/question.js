@@ -1,11 +1,10 @@
 document.addEventListener('DOMContentLoaded', function() {
-  const username = document.getElementById('username').getAttribute('username');
   const userID = document.getElementById('userID').getAttribute('userID');
   const questionID = document.getElementById("questionID").getAttribute('questionID');
-  let voteCount = parseInt(document.getElementById('voteCount').innerText.split(' ')[1]);
-
   let userAuthenticated = document.getElementById('isAuthenticated').getAttribute('isAuthenticated');
-
+  let voteCount = parseInt(document.getElementById('voteCount').innerText.split(' ')[1]);
+  
+  const voteButtonColor = getComputedStyle(document.body).getPropertyValue('--secondary-color');
   // Get current user's vote
   let userVote = 0;
 
@@ -65,20 +64,20 @@ document.addEventListener('DOMContentLoaded', function() {
     let thumbsDownButton = document.getElementById('thumbsDown');
 
     if (userVote === 1) {
-      thumbsUpButton.classList.remove('blue');
+      thumbsUpButton.classList.remove(voteButtonColor);
       thumbsUpButton.classList.add('green');
       thumbsDownButton.classList.remove('green', 'red');
-      thumbsDownButton.classList.add('blue');
+      thumbsDownButton.classList.add(voteButtonColor);
     } else if (userVote === -1) {
-      thumbsDownButton.classList.remove('blue');
+      thumbsDownButton.classList.remove(voteButtonColor);
       thumbsDownButton.classList.add('red');
       thumbsUpButton.classList.remove('green', 'red');
-      thumbsUpButton.classList.add('blue');
+      thumbsUpButton.classList.add(voteButtonColor);
     } else {
       thumbsUpButton.classList.remove('green', 'red');
-      thumbsUpButton.classList.add('blue');
+      thumbsUpButton.classList.add(voteButtonColor);
       thumbsDownButton.classList.remove('green', 'red');
-      thumbsDownButton.classList.add('blue');
+      thumbsDownButton.classList.add(voteButtonColor);
     }
   }
 

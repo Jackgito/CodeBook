@@ -1,0 +1,78 @@
+/* stylesheets/style.css */
+
+/* Custom Colors */
+:root {
+    --primary-color: #ffffff; /* Blue */
+    --secondary-color: #67beea; /* Amber */
+    --accent-color: #4c6daf; /* Green */
+  }
+  
+  /* Update Materialize Colors */
+  body {
+    background-color: var(--primary-color) !important;
+  }
+  
+  /* Navbar */
+  nav {
+    background-color: var(--secondary-color) !important;
+  }
+
+  /* Footer */
+  footer {
+    background-color: var(--secondary-color) !important;
+  }
+
+  /* Titles */
+  #title {
+   color : var(--secondary-color) !important;
+  }
+  
+  /* Buttons */
+  .btn,
+  .btn-floating,
+  .btn-large,
+  .btn-small {
+    background-color: var(--secondary-color) !important;
+    color: var(--primary-color) !important;
+  }
+  
+  .btn:hover,
+  .btn-floating:hover,
+  .btn-large:hover,
+  .btn-small:hover {
+    background-color: var(--accent-color) !important;
+  }
+  
+  /* Input Fields */
+  .input-field input[type=text]:focus,
+  .input-field input[type=password]:focus,
+  .input-field input[type=email]:focus,
+  .input-field textarea:focus {
+    border-bottom: 1px solid var(--secondary-color) !important;
+    box-shadow: 0 1px 0 0 var(--secondary-color) !important;
+  }
+  
+  /* Example - Customize Tabs */
+  .tabs .tab a {
+    color: var(--primary-color) !important;
+  }
+  
+  .tabs .tab a:hover {
+    background-color: var(--secondary-color) !important;
+    color: white;
+  }
+  
+  /* Label focus color */
+  .input-field input:focus + label {
+    color: var(--secondary-color) !important;
+  }
+  /* Label underline focus color */
+  .input-field input:focus {
+    border-bottom: 1px solid var(--secondary-color) !important;
+    box-shadow: 0 1px 0 0 var(--secondary-color) !important;
+  }
+
+  /* Icon prefix focus color */
+  .input-field .prefix.active {
+    color: var(--secondary-color) !important;
+  }
