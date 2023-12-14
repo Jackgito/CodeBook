@@ -54,18 +54,13 @@
                   <div class="col s7" style="width: 65%;">
                     <span class="card-title">
                       <!-- Create a link with data attributes -->
-                      <a href="#" class="title" id="title" 
-                        onclick="loadQuestion('<%= post.url %>')">
-                        <%= post.title %>
-                      </a>
+                      <a href="/questions/<%= post.url %>" class="title" id="title"><%= post.title %></a>
+                      
                       <!-- Shorten long questions -->
                       <p class="question" id="question">
                         <%= post.question.length > 100 ? post.question.slice(0, 100) + '...' : post.question %>
                       </p>
                     </span>
-
-                    <!-- Hidden field for comments, so they can be trasnferred to the question pages -->
-                    <input type="hidden" class="comments" value="<%= encodeURIComponent(post.comments.join(',')) %>">
                   </div>
 
                   <!-- Right Column (25%) -->
@@ -84,7 +79,8 @@
     </div>
     
     <%- include("./partials/footer") %>
-    
+
+
     <script type="text/javascript" src="/javascripts/home.js"></script>
 
   </body>

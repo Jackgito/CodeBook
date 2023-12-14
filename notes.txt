@@ -1,6 +1,9 @@
 Questions:
 Best way to pass data from route/server to the JS file
 
+TODO:
+
+
 Test user:
 Test
 test@mail.com

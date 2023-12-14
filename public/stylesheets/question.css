@@ -11,8 +11,20 @@
 }
 
 .postMetadata {
-    display: flex; /* Use flexbox to place items in a row */
-    justify-content: space-between; /* Add space between the paragraphs */
-    align-items: center; /* Align items vertically in the center */
     margin-bottom: 20px;
 }
+
+.buttonContainer {
+
+    align-items: center;
+
+    margin-top: 20px;
+}
+
+.buttonContainer p,
+.buttonContainer a {
+    margin-top: 2px;
+    margin-right: 8px; /* Adjust as needed for the desired percentage spacing */
+}
+
+

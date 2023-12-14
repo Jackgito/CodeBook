@@ -5,8 +5,7 @@ const mongoose = require("mongoose"); // For database management
 const passport = require("passport"); // For authentication
 const path = require("path");
 
-const Question = require('./models/Question');
-//const { renderHomePage } = require('./functions/renderHomePage');
+const { renderHomePage } = require('./functions/renderHomePage');
 
 
 const initializePassport = require('./passport-config')
@@ -25,11 +24,13 @@ app.set('views', path.join(__dirname, 'views'));
 const { router: authenticationRouter} = require('./routes/authentication');
 
 const questionsRouter = require('./routes/questions');
+const commentsAndVotesRouter = require('./routes/commentsAndVotes');
 
 app.use(express.urlencoded({ extended: false }));
 
 app.use('/', authenticationRouter);
 app.use('/', questionsRouter);
+app.use('/', commentsAndVotesRouter);
 
 // Connect to MongoDB database
 mongoose.connect("mongodb://127.0.0.1:27017/codeshare")
@@ -76,15 +77,9 @@ initializePassport(
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: false }));
 
+// Open home page
 app.get('/', async (req, res) => {
-  try {
-    const posts = await Question.find().sort({ createdAt: 'desc' });
-    const isAuthenticated = req.isAuthenticated()
-    res.render('home', { posts, isAuthenticated});
-  } catch (error) {
-    console.error('Error rendering home page:', error);
-    res.status(500).send('Internal Server Error');
-  }
+  renderHomePage(req, res);
 });
 
 app.listen(PORT, () => {

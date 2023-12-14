@@ -4,10 +4,12 @@
 
 <body>
   <!-- These values are used in the JS file -->
-  <div id="isAuthenticated" data-is-authenticated="<%= isAuthenticated %>"></div>
-  <div id="anotherElement" data-is-authenticated="<%= isAuthenticated %>"></div>
+  <div id="isAuthenticated" isAuthenticated="<%= isAuthenticated?.value %>"></div>
+  <div id="username" username="<%= isAuthenticated?.username %>"></div>
+  <div id="questionID" questionID="<%= question.id %>"</div>
+  <div id="userID" userID="<%= isAuthenticated.userID %>"</div>
 
-  <% if (typeof isAuthenticated === 'boolean' && isAuthenticated) { %>
+  <% if (isAuthenticated && isAuthenticated.value) { %>
     <%- include('./partials/navbarLoggedIn') %>
   <% } else { %>
     <%- include('./partials/navbarGuest') %>
@@ -17,50 +19,58 @@
     <div class="row">
       <div class="col s12">
 
-        <div class="card">
-          <div class="card-content">
-            <span class="card-title"><%= title %></span>
-            <div class="postMetadata">
-              <p>Asked <%= timeSincePost %> by <%= author %>.&nbsp;&nbsp;&nbsp;Viewed: <%= views %> times.</p>
-            </div>
-            <p><%= question %></p>
-
-            <div class="votes">
-              <p id="voteCount">Votes: <%= votes %></p>
-              <p id="loginMessage" style="display: none;">Log in to vote.</p>
-              <p id="clickMessage" style="display: none;">You have exceeded the vote limit.</p>
-              <a class="btn-floating waves-effect waves-light blue" id="thumbsUp"><i class="material-icons">thumb_up</i></a>
-              <a class="btn-floating waves-effect waves-light blue" id="thumbsDown"><i class="material-icons">thumb_down</i></a>
-
-              <% if (isAuthenticated.user == title) { %>
-                <a href="questions/edit/<%= title %>" class="waves-effect waves-light btn blue">Edit</a>
-                <a href="questions/delete/<%= title %>" class="waves-effect waves-light btn blue">Delete</a>
-              <% }%>
-
-            </div>
-          </div>
-        </div>
-
-        <h4>Comments</h4>
-
-        <% comments.forEach(comment => { %>
+        <% if (question) { %>
           <div class="card">
             <div class="card-content">
-              <span class="card-title">
-                <ul>
-                  <li><%= comment %></li>
-                </ul>
-              </span>
+              <span class="card-title"><%= question.title %></span>
+              <div class="postMetadata">
+                <p>Asked <%= timeSincePost %> by <%= question.author %>&nbsp;&nbsp;&nbsp;&nbsp;Views: <%= question.views %></p>
+              </div>
+              <p><%= question.question %></p>
+
+              <div class="buttonContainer">
+                <p id="voteCount">Votes: <%= question.votes || 0 %></p>
+                <p id="loginMessage" style="display: none;">Log in to vote.</p>
+                <p id="clickMessage" style="display: none;">You have exceeded the vote limit.</p>
+                <a class="btn-floating waves-effect waves-light blue" id="thumbsUp"><i class="material-icons">thumb_up</i></a>
+                <a class="btn-floating waves-effect waves-light blue" id="thumbsDown"><i class="material-icons">thumb_down</i></a>
+
+                <% if (isAuthenticated.user == question.author) { %>
+                  <a href="questions/edit/<%= question.title %>" class="waves-effect waves-light btn blue">Edit</a>
+                  <a href="questions/delete/<%= question.title %>" class="waves-effect waves-light btn blue">Delete</a>
+                <% } %>
+              </div>
             </div>
           </div>
-        <% }); %>
+
+          <h4>Comments</h4>
+
+          <% if (question.comments && question.comments.length > 0) { %>
+            <% question.comments.forEach(comment => { %>
+              <div class="card">
+                <div class="card-content">
+                  <span class="card-title">
+                    <ul>
+                      <li>Comment: <%= comment.comment %></li>
+                      <li>Author: <%= comment.author %></li>
+                      <li>Votes: <%= comment.votes %></li>
+                      <li>Created At: <%= comment.createdAt %></li>
+                    </ul>
+                  </span>
+                </div>
+              </div>
+            <% }); %>
+          <% } else { %>
+            <p>No comments available.</p>
+          <% } %>
+        <% } else { %>
+          <p>No question available.</p>
+        <% } %>
 
       </div>
     </div>
   </div>
 
-  <!-- Include your external JavaScript file -->
   <script type="text/javascript" src="/javascripts/question.js"></script>
-
 </body>
 </html>

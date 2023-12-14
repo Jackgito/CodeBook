@@ -5,22 +5,19 @@ document.addEventListener('DOMContentLoaded', function () {
         event.preventDefault();
     
         // Get the values entered in the title and question input fields
-        const titleValue = document.getElementById('title').value;
-        const questionValue = document.getElementById('question').value;
-    
-        // Log the values being submitted
-        console.log('Title:', titleValue);
-        console.log('Question:', questionValue);
+        const title = document.getElementById('title').value;
+        const question = document.getElementById('question').value;
+        const author = document.getElementById('username').innerText
     
         // Check if title and question exist
-        if (titleValue.trim() === '' || questionValue.trim() === '') {
+        if (title.trim() === '' || question.trim() === '') {
           console.error('Title and question are required!');
           return; // Don't proceed with form submission if title or question is empty
         }
     
         // Encode the title using encodeURIComponent
-        const encodedTitle = encodeURIComponent(titleValue);
-    
+        const encodedTitle = encodeURIComponent(title);
+        console.log("Title: ", title, "Encoded: ", encodedTitle);
     
         // Set the form action dynamically
         this.action = '/questions/' + encodedTitle;

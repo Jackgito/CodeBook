@@ -1,35 +1,75 @@
 document.addEventListener('DOMContentLoaded', function() {
-
+  const username = document.getElementById('username').getAttribute('username');
+  const userID = document.getElementById('userID').getAttribute('userID');
+  const questionID = document.getElementById("questionID").getAttribute('questionID');
   let voteCount = parseInt(document.getElementById('voteCount').innerText.split(' ')[1]);
 
-  //let voteCount = JSON.parse(document.getElementById('questionObject').getAttribute('questionObject')).vote;
-  // let userAuthenticated = document.getElementById('isAuthenticated').getAttribute('data-is-authenticated');
-  let userAuthenticated = "true"; // TESTING ONLY
-  let userVoteStatus = 0; // 0: No vote, 1: Upvote, -1: Downvote
+  let userAuthenticated = document.getElementById('isAuthenticated').getAttribute('isAuthenticated');
+
+  // Get current user's vote
+  let userVote = 0;
+
+  async function getVote() {
+    if (userAuthenticated == "true") {
+      try {
+        userVote = await getUserVoteValue(userID, questionID);
+        console.log("User vote:", userVote);
+        setButtonColors();
+      } catch (error) {
+        console.error("Error getting user vote:", error);
+      }
+    }
+  }
+  
+  // Call the function
+  getVote();
+  
+
   let maxClicks = 10;
   let clickCount = 0;
-  console.log(questionObj)
 
+  // Thumbs Up Button
+  let thumbsUpButton = document.getElementById('thumbsUp');
+  thumbsUpButton.addEventListener('click', function() {
+    if (userAuthenticated == "true") {
+      vote(1);
+      setButtonColors();
+      updateTotalVotesToDB(voteCount, questionID);
+      updateUserVoteToDB(userID, userVote, questionID)
+    } else {
+      showLoginMessage();
+    }
+  });
 
-  function updateVoteCount() {
-    document.getElementById('voteCount').innerText = 'Votes: ' + voteCount;
-  }
+  // Thumbs Down Button
+  let thumbsDownButton = document.getElementById('thumbsDown');
+  thumbsDownButton.addEventListener('click', function() {
+    if (userAuthenticated == "true") {
+      vote(-1);
+      setButtonColors();
+      updateTotalVotesToDB(voteCount, questionID);
+      updateUserVoteToDB(userID, userVote, questionID)
+    } else {
+      showLoginMessage();
+    }
+  });
 
   function showLoginMessage() {
     let loginMessage = document.getElementById('loginMessage');
     loginMessage.style.display = 'block';
   }
 
-  function setButtonColors() {
+  async function setButtonColors() {
+    console.log("uservote: ", userVote)
     let thumbsUpButton = document.getElementById('thumbsUp');
     let thumbsDownButton = document.getElementById('thumbsDown');
 
-    if (userVoteStatus === 1) {
+    if (userVote === 1) {
       thumbsUpButton.classList.remove('blue');
       thumbsUpButton.classList.add('green');
       thumbsDownButton.classList.remove('green', 'red');
       thumbsDownButton.classList.add('blue');
-    } else if (userVoteStatus === -1) {
+    } else if (userVote === -1) {
       thumbsDownButton.classList.remove('blue');
       thumbsDownButton.classList.add('red');
       thumbsUpButton.classList.remove('green', 'red');
@@ -50,75 +90,121 @@ document.addEventListener('DOMContentLoaded', function() {
       return;
     }
 
-    if (userVoteStatus === voteValue) {
+    if (userVote === voteValue) {
       // If the user clicks the same button again, remove the vote
-      userVoteStatus = 0;
+      userVote = 0;
       voteCount -= voteValue;
       clickCount++;
-      setButtonColors();
-    } else if (userVoteStatus === -voteValue) {
+    } else if (userVote === -voteValue) {
       // If the user clicks the other button, toggle the vote
       voteCount += 2 * voteValue;
-      userVoteStatus = voteValue;
+      userVote = voteValue;
       clickCount++;
-      setButtonColors();
     } else {
       // If the user hasn't voted yet, toggle the vote
       voteCount += voteValue;
-      userVoteStatus = voteValue;
+      userVote = voteValue;
       clickCount++;
-      setButtonColors();
     }
 
-    // Save click count to localStorage
-    localStorage.setItem('clickCount', clickCount);
-    updateVoteCount();
-    updateVotesToDatabase(voteValue);
+    document.getElementById('voteCount').innerText = 'Votes: ' + voteCount;
   }
 
-  // Thumbs Up Button
-  let thumbsUpButton = document.getElementById('thumbsUp');
-  thumbsUpButton.addEventListener('click', function() {
-    if (userAuthenticated == "true") {
-      vote(thumbsUpButton, 1);
-    } else {
-      showLoginMessage();
+  // Check if user has voted before
+  async function getUserVote(username) {
+    try {
+      const response = await fetch(`/questions/get/userVote?username=${username}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+  
+      const data = await response.json();
+    } catch (error) {
+      console.error('Error:', error.message);
     }
-  });
-
-  // Thumbs Down Button
-  let thumbsDownButton = document.getElementById('thumbsDown');
-  thumbsDownButton.addEventListener('click', function() {
-    if (userAuthenticated == "true") {
-      vote(thumbsDownButton, -1);
-    } else {
-      showLoginMessage();
+  }
+  
+  // Saves total votes to database
+  async function updateTotalVotesToDB(voteCount, questionId) {
+    const request = {
+      voteCount: voteCount,
+      questionId: questionId
     }
-  });
-
-  function updateVotesToDatabase(voteValue) {
-    questionId = 1;
-    return fetch('/update-votes', {
+    fetch("/questions/update/votes", {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ questionId, voteValue }),
+      body: JSON.stringify(request),
     })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          // Optionally update the UI with the updated question data
-          console.log('Vote updated successfully:', data.question);
-        } else {
-          console.error('Failed to update vote:', data.error);
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
         }
+        return response.json();
       })
       .catch(error => {
-        console.error('Error updating vote:', error);
+        console.error('Error:', error.message);
       });
   }
 
-  // Set initial button colors on page load
-  setButtonColors();
+  async function updateUserVoteToDB(userID, userVote, questionID) {
+    try {
+      const request = { userID, votes: { questionID: questionID, userVote: userVote } };
+  
+      // Make a POST request to the server endpoint
+      const response = await fetch('/users/update/vote', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(request),
+      });
+  
+      // Check if the response is successful (status code 200-299)
+      if (response.ok) {
+        // Parse the JSON response
+        const data = await response.json();
+        console.log('Vote updated successfully:', data.message);
+      } else {
+        // Handle errors for non-successful responses
+        console.error('Error:', response.statusText);
+      }
+    } catch (error) {
+      // Handle network errors or other exceptions
+      console.error('Error:', error.message);
+    }
+  }
+
+  // Retrieve the current user's vote value (check what have they voted for)
+  async function getUserVoteValue(userID, questionID) {
+    try {
+  
+      // Make a POST request to the server endpoint with data included
+      const response = await fetch('/users/get/vote', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          questionID: questionID,
+          userID: userID,
+        }),
+      });
+  
+      const data = await response.json();
+      console.log('User Vote Value:', data.userVote);
+      return data.userVote ?? 0;
+  
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+  
 });

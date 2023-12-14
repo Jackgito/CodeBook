@@ -5,7 +5,6 @@ const session = require('express-session');
 const flash = require('connect-flash');
 
 const { renderHomePage } = require('../functions/renderHomePage');
-const { renderLoginPage } = require('../functions/renderLoginPage');
 
 const router = express.Router();
 
@@ -64,16 +63,15 @@ passport.deserializeUser(async (id, done) => {
 router.get("/login", (req, res) => {
   const isAuthenticated = req.isAuthenticated()
   if (isAuthenticated) {
-    return res.render('home', { posts, isAuthenticated});
+    return res.redirect('/');
   }
-
   res.render("login");
 });
 
 router.get("/signUp", (req, res) => {
   const isAuthenticated = req.isAuthenticated()
   if (isAuthenticated) {
-    return res.render('home', { posts, isAuthenticated});
+    return res.redirect('/');
   }
   res.render("signUp");
 });

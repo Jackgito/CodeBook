@@ -3,7 +3,8 @@
   <%- include("./partials/head", { title: "New question", stylesheet: "../../stylesheets/newQuestion.css" }) %>
 
   <body>
-    <% if (typeof isAuthenticated === 'boolean' && isAuthenticated) { %>
+
+    <% if (typeof isAuthenticated.value === 'boolean' && isAuthenticated.value) { %>
       <%- include('./partials/navbarLoggedIn') %>
     <% } else { %>
       <%- include('./partials/navbarGuest') %>
@@ -13,17 +14,19 @@
           <h4>Ask a public question</h4>
 
           <form id="questionForm" method="POST">
-              <div>
-                <label for="title" class="label">Title:</label>
-                <input id="title" name="title" required>
-              </div>
-            
-              <div>
-                <label for="question" class="label">Question:</label>
-                <textarea id="question" name="question" rows="4" required class="materialize-textarea"></textarea>
-              </div>
-            
-              <button type="submit" class="btn blue">Submit</button>
+             <input type="hidden" id="username" name="username" value="<%= isAuthenticated.user %>">
+
+            <div>
+              <label for="title" class="label">Title:</label>
+              <input id="title" name="title" required>
+            </div>
+          
+            <div>
+              <label for="question" class="label">Question:</label>
+              <textarea id="question" name="question" rows="4" required class="materialize-textarea"></textarea>
+            </div>
+          
+            <button type="submit" class="btn blue">Submit</button>
           </form>
 
       </div>

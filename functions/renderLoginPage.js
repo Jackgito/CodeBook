@@ -1,11 +1,16 @@
-const { renderHomePage } = require('./renderHomePage');
+const Question = require('../models/Question');
 
-async function renderLoginPage(req, res) {
-    const isAuthenticated = req.isAuthenticated()
-    
-
-}
+async function renderQuestionPage(req, res, title) {
+    try {
+      const post = await Question.findOne({ title: title });
+      const isAuthenticated = req.isAuthenticated()
+      res.render('question', { post, isAuthenticated});
+    } catch (error) {
+      console.error('Error rendering home page:', error);
+      res.status(500).send('Internal Server Error');
+    }
+  }
 
 module.exports = {
-    renderLoginPage
+    renderQuestionPage
 };

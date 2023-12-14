@@ -1,4 +1,5 @@
 .page-footer {
+    position:fixed;
     margin-top: 100px;
     bottom: 0;
     width: 100%;

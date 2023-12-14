@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const invalidEmailHelper = document.getElementById('invalidEmail');
   const invalidPasswordHelper = document.getElementById('invalidPassword');
 
-  // Function to make an asynchronous request to check uniqueness
+  // Used for checking username and email unqiueness
   const checkUniqueness = async (field, value) => {
     try {
       const response = await fetch(`/check-unique?field=${field}&value=${value}`);
@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   };
 
-  // Function to debounce a check function
+  // Used for mitigating database overload
   const debounce = (func, delay) => {
     let timeout;
     return (...args) => {
@@ -27,11 +27,28 @@ document.addEventListener('DOMContentLoaded', function () {
     };
   };
 
-  // Function to check username uniqueness
-  const checkUsernameUniqueness = async () => {
+  // Function to check username uniqueness and validity
+  const validateUsername = async () => {
     const value = usernameInput.value;
+  
+    // Check if the username is empty
+    if (!value) {
+      invalidUsernameHelper.hidden = true;
+      invalidUsernameHelper.textContent = '';
+      usernameInput.classList.remove('invalid');
+      return;
+    }
+  
+    // Check length
+    if (value.length > 30) {
+      invalidUsernameHelper.hidden = false;
+      invalidUsernameHelper.textContent = 'Username can\'t exceed 30 characters.';
+      usernameInput.classList.add('invalid');
+      return;
+    }
+  
     const isUnique = await checkUniqueness('username', value);
-
+  
     if (!isUnique) {
       invalidUsernameHelper.hidden = false;
       invalidUsernameHelper.textContent = 'Username already taken.';
@@ -46,24 +63,44 @@ document.addEventListener('DOMContentLoaded', function () {
   // Function to validate password
   const validatePassword = () => {
     const password = passwordInput.value;
-    const isValidPassword = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/.test(password);
 
-    if (!isValidPassword) {
-      invalidPasswordHelper.textContent = 'Password must contain at least eight characters, including at least 1 letter and 1 number.';
+    // Check if the password is empty
+    if (!password) {
+      invalidPasswordHelper.textContent = 'Password is required.';
       passwordInput.classList.add('invalid');
-    } else {
-      invalidPasswordHelper.textContent = '';
-      passwordInput.classList.remove('invalid');
+      return;
     }
+
+    // Check length
+    if (password.length < 8 || password.length > 30) {
+      invalidPasswordHelper.textContent = 'Password must be between 8 and 30 characters.';
+      passwordInput.classList.add('invalid');
+      return;
+    }
+
+    // Check for at least 1 letter and 1 number using Unicode character classes
+    const hasLetter = /\p{L}/u.test(password);
+    const hasNumber = /\d/.test(password);
+
+    if (!hasLetter || !hasNumber) {
+      invalidPasswordHelper.textContent = 'Password must contain at least 1 letter and 1 number.';
+      passwordInput.classList.add('invalid');
+      return;
+    }
+
+    invalidPasswordHelper.textContent = '';
+    passwordInput.classList.remove('invalid');
   };
 
-  // Function to check email uniqueness
+
+
+  // Function to check email uniqueness (not used for user security purposes)
   const checkEmailUniqueness = async () => {
     const value = emailInput.value;
     const isUnique = await checkUniqueness('email', value);
     return isUnique;
   };
-  
+
   // Function to validate email syntax
   const validateEmailSyntax = () => {
     const email = emailInput.value;
@@ -72,23 +109,23 @@ document.addEventListener('DOMContentLoaded', function () {
   };
 
   // Debounced event listener for username input
-  usernameInput.addEventListener('input', debounce(checkUsernameUniqueness, 800));
+  usernameInput.addEventListener('input', debounce(validateUsername, 800));
 
   // Debounced event listener for email input
   emailInput.addEventListener('input', debounce(async () => {
-  const isValidSyntax = validateEmailSyntax();
-  //const isUnique = await checkEmailUniqueness(); // Wait for the asynchronous function to complete
+    const isValidSyntax = validateEmailSyntax();
+    // const isUnique = await checkEmailUniqueness(); // Wait for the asynchronous function to complete
 
-  if (isValidSyntax) {
-    invalidEmailHelper.hidden = true;
-    invalidEmailHelper.textContent = '';
-    emailInput.classList.remove('invalid');
-  } else {
-    invalidEmailHelper.hidden = false;
-    invalidEmailHelper.textContent = 'Enter a valid email address.';
-    emailInput.classList.add('invalid');
-  }
-}, 800));
+    if (isValidSyntax) {
+      invalidEmailHelper.hidden = true;
+      invalidEmailHelper.textContent = '';
+      emailInput.classList.remove('invalid');
+    } else {
+      invalidEmailHelper.hidden = false;
+      invalidEmailHelper.textContent = 'Enter a valid email address.';
+      emailInput.classList.add('invalid');
+    }
+  }, 800));
 
   // Debounced event listener for password input
   passwordInput.addEventListener('input', debounce(validatePassword, 800));
