@@ -1,5 +1,25 @@
 const mongoose = require('mongoose');
-const commentSchema = require('./Comment');
+
+const commentSchema = new mongoose.Schema({
+  author: {
+    type: String,
+    required: false,
+  },
+  comment: {
+    type: String,
+    required: false,
+  },
+  votes: {
+    type: Number,
+    default: 0,
+    required: false,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now(),
+    required: false,
+  },
+});
 
 const questionSchema = new mongoose.Schema({
   title: {

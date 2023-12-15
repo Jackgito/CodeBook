@@ -140,7 +140,7 @@ function timeSince(date) {
       result += `${result ? ', ' : ''}${days} ${days === 1 ? 'day' : 'days'}`;
   }
 
-  return result ? result + ' ago' : 'just now';
+  return result ? result + ' ago' : 'today';
 }
 
 module.exports = router;

@@ -1,13 +1,11 @@
-/* stylesheets/style.css */
-
 /* Custom Colors */
 :root {
-    --primary-color: #ffffff; /* Blue */
-    --secondary-color: #67beea; /* Amber */
-    --accent-color: #4c6daf; /* Green */
+    --primary-color: #ffffff;
+    --secondary-color: #4ea6d2;
+    --accent-color: #4c6daf;
   }
   
-  /* Update Materialize Colors */
+  /* Background */
   body {
     background-color: var(--primary-color) !important;
   }
@@ -52,16 +50,6 @@
     box-shadow: 0 1px 0 0 var(--secondary-color) !important;
   }
   
-  /* Example - Customize Tabs */
-  .tabs .tab a {
-    color: var(--primary-color) !important;
-  }
-  
-  .tabs .tab a:hover {
-    background-color: var(--secondary-color) !important;
-    color: white;
-  }
-  
   /* Label focus color */
   .input-field input:focus + label {
     color: var(--secondary-color) !important;
@@ -75,4 +63,8 @@
   /* Icon prefix focus color */
   .input-field .prefix.active {
     color: var(--secondary-color) !important;
+  }
+
+  body {
+    font-family: 'Poppins', sans-serif;
   }

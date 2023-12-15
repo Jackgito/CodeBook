@@ -2,6 +2,8 @@ Questions:
 Best way to pass data from route/server to the JS file
 
 TODO:
+Comment votes
+Edit and delete questions/answers
 
 
 Test user:

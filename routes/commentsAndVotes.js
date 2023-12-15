@@ -1,13 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
-
+const Question = require('../models/Question.js');
 
 const ensureAuthenticated = require('./authentication').ensureAuthenticated;
 
 router.post('/users/get/vote', async (req, res) => {
   const { questionID, userID } = req.body;
-  console.log("!!!!!!!", req.body)
   try {
 
 
@@ -74,6 +73,35 @@ router.post('/users/update/vote', async (req, res) => {
   } catch (error) {
     console.error('Error updating vote:', error);
     res.status(500).send('Internal Server Error');
+  }
+});
+
+// Save answers to the database
+router.post('/questions/:id/addAnswer', async (req, res) => {
+  try {
+    const questionId = req.params.id;
+    const { answer } = req.body;
+
+    // Find the question by ID
+    const question = await Question.findById(questionId);
+
+    if (!question) {
+      return res.status(404).json({ error: 'Question not found' });
+    }
+
+    // Add the answer to the comments array
+    question.comments.push({
+      author: req.user.username, // Assuming you have the user information in req.user
+      comment: answer,
+    });
+
+    // Save the updated question
+    await question.save();
+
+    res.status(200).json({ success: 'Answer added successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 

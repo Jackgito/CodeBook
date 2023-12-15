@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
         event.preventDefault();
     
         // Get the values entered in the title and question input fields
-        const title = document.getElementById('title').value;
+        const title = document.getElementById('questionTitle').value;
         const question = document.getElementById('question').value;
         const author = document.getElementById('username').innerText
     

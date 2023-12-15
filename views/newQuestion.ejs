@@ -16,21 +16,19 @@
           <form id="questionForm" method="POST">
              <input type="hidden" id="username" name="username" value="<%= isAuthenticated.user %>">
 
-            <div>
-              <label for="title" class="label">Title:</label>
-              <input id="title" name="title" required>
+            <div class="input-field">
+              <label for="questionTitle">Title:</label>
+              <input id="questionTitle" name="questionTitle" type="text" required>
             </div>
           
-            <div>
-              <label for="question" class="label">Question:</label>
-              <textarea id="question" name="question" rows="4" required class="materialize-textarea"></textarea>
+            <div class="input-field">
+              <textarea id="question" name="question" placeholder="Question" required rows="20" cols="50"></textarea>
             </div>
           
             <button type="submit" class="btn">Submit</button>
           </form>
 
       </div>
-
       <script src="/javascripts/newQuestion.js"></script>
   </body>
 </html>

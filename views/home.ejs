@@ -27,7 +27,8 @@
             <div class="card">
               <div class="card-content">
                 <div class="row">
-                  <!-- Left Column (10%) -->
+
+                  <!-- Left Column -->
                   <div class="col s1" style="width: 10%;">
                     <span class="card-title">
                       
@@ -50,8 +51,8 @@
                     </span>
                   </div>
                               
-                  <!-- Middle Column (65%) -->
-                  <div class="col s7" style="width: 65%;">
+                  <!-- Middle Column -->
+                  <div class="col s7" style="width: 60%;">
                     <span class="card-title">
                       <!-- Create a link with data attributes -->
                       <a href="/questions/<%= post.url %>" class="title" id="title"><%= post.title %></a>
@@ -63,10 +64,10 @@
                     </span>
                   </div>
 
-                  <!-- Right Column (25%) -->
-                  <div class="col s4" style="width: 25%;">
+                  <!-- Right Column -->
+                  <div class="col s4" style="width: 30%;">
                     <span class="card-title">
-                      <p class="author" id="author"><%= post.author %> asked at <%= post.createdAt.toLocaleDateString() %></p>
+                      <p class="right-align" id="author"><%= post.author %> asked at <%= post.createdAt.toLocaleDateString() %></p>
                       <p class="tags" id="tags"><%= post.tags %></p>
                     </span>
                   </div>
@@ -77,9 +78,7 @@
         </div>
       </div>
     </div>
-    
     <%- include("./partials/footer") %>
-
 
     <script type="text/javascript" src="/javascripts/home.js"></script>
 

@@ -5,6 +5,7 @@
 
 <%- include("./partials/head", { title: "Log in", stylesheet: "/stylesheets/question.css" }) %>
 
+
 <body>
   <!-- These values are used in the JS file -->
   <div id="isAuthenticated" isAuthenticated="<%= isAuthenticated?.value %>"></div>
@@ -38,7 +39,7 @@
                 <a class="btn-floating waves-effect waves-light" id="thumbsUp"><i class="material-icons">thumb_up</i></a>
                 <a class="btn-floating waves-effect waves-light" id="thumbsDown"><i class="material-icons">thumb_down</i></a>
 
-                <% if (isAuthenticated.user == question.author) { %>
+                <% if (isAuthenticated.username == question.author) { %>
                   <a href="questions/edit/<%= question.title %>" class="waves-effect waves-light btn">Edit</a>
                   <a href="questions/delete/<%= question.title %>" class="waves-effect waves-light btn">Delete</a>
                 <% } %>
@@ -47,33 +48,36 @@
           </div>
 
 
-          <% if (question.answers && question.answers.length > 0) { %>
-            <h4>Answers</h4>
-            <% question.answers.forEach(answer => { %>
+
+          <% if (question.comments && question.comments.length > 0) { %>
+            <h4>Comments</h4>
+            <% question.comments.forEach(comment => { %>
               <div class="card">
                 <div class="card-content">
                   <span class="card-title">
                     <ul>
-                      <li>Answer: <%= answer.answer %></li>
-                      <li>Author: <%= answer.author %></li>
-                      <li>Votes: <%= answer.votes %></li>
-                      <li>Created At: <%= answer.createdAt %></li>
+                      <li><%= comment.comment %></li>
                     </ul>
                   </span>
+                  <div class="buttonContainer">
+                    <p>Answered <%= timeSince(comment.createdAt) %> by <%= comment.author %></p>
+                    <p>Votes: <%= comment.votes %></p>
+                    <a class="btn-floating waves-effect waves-light thumbsUpComment" data-comment-id="<%= comment._id %>"><i class="material-icons">thumb_up</i></a>
+                    <a class="btn-floating waves-effect waves-light thumbsDownComment" data-comment-id="<%= comment._id %>"><i class="material-icons">thumb_down</i></a>
+                  </div>
                 </div>
               </div>
             <% }); %>
           <% } %>
+          
 
-          <!-- Add an answer form for authenticated users -->
+          <!-- Add a comment field for authenticated users -->
           <% if (isAuthenticated.value) { %>
-            <form action="/addAnswer" method="POST">
+            <form action="/questions/<%= question.id %>/addComment" method="POST" id="commentForm">
               <div class="input-field">
-                <i class="material-icons prefix">mode_comment</i>
-                <textarea id="answer" class="materialize-textarea" name="answer" required></textarea>
-                <label for="answer">Your Answer</label>
+                <textarea id="comment" name="comment" placeholder="Your comment" rows="4" cols="50" required></textarea>
               </div>
-              <button type="submit" class="btn">Submit Answer</button>
+              <button type="submit" class="btn">Submit Comment</button>
             </form>
           <% } %>
 
@@ -84,6 +88,32 @@
       </div>
     </div>
   </div>
+
+  <!-- This is used to format the comment times -->
+  <% function timeSince(date) {
+    const currentDate = new Date();
+    const pastDate = new Date(date);
+  
+    const years = currentDate.getFullYear() - pastDate.getFullYear();
+    const months = currentDate.getMonth() - pastDate.getMonth();
+    const days = currentDate.getDate() - pastDate.getDate();
+  
+    let result = '';
+  
+    if (years > 0) {
+        result += `${years} ${years === 1 ? 'year' : 'years'}`;
+    }
+  
+    if (months > 0) {
+        result += `${result ? ', ' : ''}${months} ${months === 1 ? 'month' : 'months'}`;
+    }
+  
+    if (days > 0) {
+        result += `${result ? ', ' : ''}${days} ${days === 1 ? 'day' : 'days'}`;
+    }
+  
+    return result ? result + ' ago' : 'today';
+  } %>
 
   <script type="text/javascript" src="/javascripts/question.js"></script>
 </body>

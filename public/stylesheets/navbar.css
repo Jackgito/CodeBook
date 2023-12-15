@@ -1,15 +1,16 @@
-body {
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-}
-
 .nav-wrapper {
   padding-left: 20px;
   padding-right: 20px;
 }
 
 #loginBtn, #signUpBtn, #homeBtn, #logoutBtn, #profileBtn {
-  font-size: 24px;
+  font-size: 1.4rem;
 }
 
-/* Media query for smaller screens (e.g., mobile devices) */
-
+.sidenav {
+  width: 180px;
+  i {
+    margin: 0 !important;
+    margin-right: 10px !important;
+  }
+}

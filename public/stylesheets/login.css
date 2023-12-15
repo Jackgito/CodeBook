@@ -1,10 +1,10 @@
-.loginContainer {
+.pageContainer {
   margin: auto;
-  margin-top: 25vh;
-  background-color: #fff;
+  margin-top: 20vh;
   border-radius: 8px;
   border: 2px solid black;
-  width: 400px;
+  width: 80vw;
+  max-width: 400px;
   padding: 30px;
 }
 
