@@ -32,8 +32,10 @@ app.use('/', authenticationRouter);
 app.use('/', questionsRouter);
 app.use('/', commentsAndVotesRouter);
 
+const uri = "mongodb+srv://Codebook:D7SeTmolljnr4wKb@codebookcluster.6fowij0.mongodb.net/?retryWrites=true&w=majority"
+
 // Connect to MongoDB database
-mongoose.connect("mongodb://127.0.0.1:27017/codeshare")
+mongoose.connect(uri)
 .then(()=>{
   console.log('Mongoose connected');
 })

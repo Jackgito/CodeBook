@@ -23,10 +23,10 @@ router.get('/questions/new/question', ensureAuthenticated, (req, res) => {
 // Save a new question
 router.post('/questions/:title', async (req, res) => {
   try {
-      const url = encodeURIComponent(req.body.title)
+      const url = encodeURIComponent(req.body.questionTitle)
       // Create a new Question document
       const newQuestion = new Question({
-        title: req.body.title,
+        title: req.body.questionTitle,
         question: req.body.question,
         createdAt: new Date(),
         votes: 0,
@@ -64,12 +64,12 @@ router.get('/questions/:url', async (req, res) => {
   try {
     // Find question from the database based on the title
     const question = await fetchQuestion(req.params.url);
+    console.log(question, req.params.url)
 
     if (question && question.views !== null && question.views !== undefined) {
       question.views += 1; // Increase view count by one
     }
 
-    await question.save();
     const timeSincePost = timeSince(question.createdAt);
     const isAuthenticated = {
       username: req.isAuthenticated() ? req.user.username : null,

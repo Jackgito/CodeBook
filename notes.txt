@@ -2,11 +2,14 @@ Questions:
 Best way to pass data from route/server to the JS file
 
 TODO:
+Password verification
 Comment votes
 Edit and delete questions/answers
 
 
 Test user:
-Test
-test@mail.com
+jack@mail.com
 password1
+
+Codebook
+D7SeTmolljnr4wKb
