@@ -64,10 +64,14 @@ router.get('/questions/:url', async (req, res) => {
   try {
     // Find question from the database based on the title
     const question = await fetchQuestion(req.params.url);
-    console.log(question, req.params.url)
 
+    // Increase view count by one
     if (question && question.views !== null && question.views !== undefined) {
-      question.views += 1; // Increase view count by one
+      question.views += 1;
+      await Question.updateOne(
+        { _id: question._id },
+        { $set: { views: question.views } }
+      );
     }
 
     const timeSincePost = timeSince(question.createdAt);
@@ -85,8 +89,6 @@ router.get('/questions/:url', async (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 });
-
-// Get user's vote for the current question
 
 
 // Handle vote updates
@@ -123,17 +125,13 @@ function timeSince(date) {
   const pastDate = new Date(date);
 
   const years = currentDate.getFullYear() - pastDate.getFullYear();
-  const months = currentDate.getMonth() - pastDate.getMonth();
+  const months = (currentDate.getMonth() - pastDate.getMonth()) + (years * 12);
   const days = currentDate.getDate() - pastDate.getDate();
 
   let result = '';
 
-  if (years > 0) {
-      result += `${years} ${years === 1 ? 'year' : 'years'}`;
-  }
-
   if (months > 0) {
-      result += `${result ? ', ' : ''}${months} ${months === 1 ? 'month' : 'months'}`;
+      result += `${months} ${months === 1 ? 'month' : 'months'}`;
   }
 
   if (days > 0) {
@@ -142,5 +140,6 @@ function timeSince(date) {
 
   return result ? result + ' ago' : 'today';
 }
+
 
 module.exports = router;

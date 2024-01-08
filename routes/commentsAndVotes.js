@@ -5,6 +5,7 @@ const Question = require('../models/Question.js');
 
 const ensureAuthenticated = require('./authentication').ensureAuthenticated;
 
+// Get user's current vote status
 router.post('/users/get/vote', async (req, res) => {
   const { questionID, userID } = req.body;
   try {
@@ -38,11 +39,10 @@ router.post('/users/get/vote', async (req, res) => {
   }
 });
 
-
+// Save the vote status to the database
 router.post('/users/update/vote', async (req, res) => {
   const userID = req.body.userID;
   const vote = req.body.votes;
-  console.log("Vote:", vote, "User ID: ", userID);
 
   try {
     // Find the user by ID
@@ -76,29 +76,30 @@ router.post('/users/update/vote', async (req, res) => {
   }
 });
 
-// Save answers to the database
-router.post('/questions/:id/addAnswer', async (req, res) => {
+// Save comments to the database
+router.post('/questions/add/comment', async (req, res) => {
   try {
-    const questionId = req.params.id;
-    const { answer } = req.body;
+    const { comment, username, questionID } = req.body;
 
     // Find the question by ID
-    const question = await Question.findById(questionId);
+    const question = await Question.findById(questionID);
 
     if (!question) {
       return res.status(404).json({ error: 'Question not found' });
     }
 
-    // Add the answer to the comments array
-    question.comments.push({
-      author: req.user.username, // Assuming you have the user information in req.user
-      comment: answer,
-    });
+    // Add the comment to the comments array
+    const newComment = {
+      author: username,
+      comment: comment,
+    };
+    question.comments.push(newComment);
 
     // Save the updated question
     await question.save();
 
-    res.status(200).json({ success: 'Answer added successfully' });
+    // Handle response
+    res.status(200).json({ message: 'Comment added successfully' });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal Server Error' });

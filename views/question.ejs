@@ -5,7 +5,6 @@
 
 <%- include("./partials/head", { title: "Log in", stylesheet: "/stylesheets/question.css" }) %>
 
-
 <body>
   <!-- These values are used in the JS file -->
   <div id="isAuthenticated" isAuthenticated="<%= isAuthenticated?.value %>"></div>
@@ -47,8 +46,6 @@
             </div>
           </div>
 
-
-
           <% if (question.comments && question.comments.length > 0) { %>
             <h4>Comments</h4>
             <% question.comments.forEach(comment => { %>
@@ -70,8 +67,7 @@
             <% }); %>
           <% } %>
           
-
-          <!-- Add a comment field for authenticated users -->
+          <!-- Comment field for authenticated users -->
           <% if (isAuthenticated.value) { %>
             <form action="/questions/<%= question.id %>/addComment" method="POST" id="commentForm">
               <div class="input-field">
@@ -89,23 +85,19 @@
     </div>
   </div>
 
-  <!-- This is used to format the comment times -->
+  <!-- Function to format the comment times -->
   <% function timeSince(date) {
     const currentDate = new Date();
     const pastDate = new Date(date);
   
     const years = currentDate.getFullYear() - pastDate.getFullYear();
-    const months = currentDate.getMonth() - pastDate.getMonth();
+    const months = (currentDate.getMonth() - pastDate.getMonth()) + (years * 12);
     const days = currentDate.getDate() - pastDate.getDate();
   
     let result = '';
   
-    if (years > 0) {
-        result += `${years} ${years === 1 ? 'year' : 'years'}`;
-    }
-  
     if (months > 0) {
-        result += `${result ? ', ' : ''}${months} ${months === 1 ? 'month' : 'months'}`;
+        result += `${months} ${months === 1 ? 'month' : 'months'}`;
     }
   
     if (days > 0) {
@@ -114,7 +106,7 @@
   
     return result ? result + ' ago' : 'today';
   } %>
-
+  
   <script type="text/javascript" src="/javascripts/question.js"></script>
 </body>
 </html>

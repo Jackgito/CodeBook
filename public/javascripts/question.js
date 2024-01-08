@@ -20,10 +20,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
   
-  // Call the function
   getVote();
   
-
   let maxClicks = 10;
   let clickCount = 0;
 
@@ -108,26 +106,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('voteCount').innerText = 'Votes: ' + voteCount;
   }
-
-  // Check if user has voted before
-  async function getUserVote(username) {
-    try {
-      const response = await fetch(`/questions/get/userVote?username=${username}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-  
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-  
-      const data = await response.json();
-    } catch (error) {
-      console.error('Error:', error.message);
-    }
-  }
   
   // Saves total votes to database
   async function updateTotalVotesToDB(voteCount, questionId) {
@@ -205,5 +183,41 @@ document.addEventListener('DOMContentLoaded', function() {
       console.error('Error:', error);
     }
   }
+
+  document.getElementById("commentForm").addEventListener("submit", function (event) {
+    event.preventDefault(); // Prevent the default form submission
   
+    // Get values from HTML elements
+    const commentValue = document.getElementById("comment").value;
+    const usernameValue = document.getElementById("username").getAttribute("username");
+    const questionIDValue = document.getElementById("questionID").getAttribute("questionID");
+  
+    // Perform POST request
+    fetch(`/questions/add/comment`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        comment: commentValue,
+        username: usernameValue,
+        questionID: questionIDValue
+      }),
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        // Handle the response if needed
+        location.reload();
+      })
+      .catch(error => {
+        console.error("Error:", error);
+      });
+  });
+  
+
 });

@@ -14,12 +14,12 @@ const LocalStrategy = require('passport-local').Strategy;
 
 router.use(flash());
 router.use(session({
-  secret: "miX2405H5V8VYlQl8nVx", // Change this to a strong, randomly generated key
+  secret: "miX2405H5V8VYlQl8nVx",
   resave: true,
   saveUninitialized: true
 }));
 
-router.use(passport.initialize()); // Initialize Passport on the router
+router.use(passport.initialize());
 router.use(passport.session()); 
 
 // Passport local strategy configuration
@@ -98,42 +98,6 @@ router.post('/login', (req, res, next) => {
       renderHomePage(req, res, req.isAuthenticated());
     });
   })(req, res, next);
-});
-
-router.post('/signUp', async (req, res) => {
-  try {
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
-
-    // Create a new User instance using the User model
-    const newUser = new User({
-      username: req.body.username,
-      email: req.body.email,
-      password: hashedPassword,
-    });
-
-    try {
-      // Save the user to the MongoDB collection named "users"
-      await newUser.save();
-      req.flash('success', 'Successfully signed up.'); // Optional success message
-      res.render('login', { success: 'Successfully signed up.', messages: req.flash() });
-    } catch (error) {
-      // Handle uniqueness constraint violation
-      if (error.code === 11000 && error.keyPattern && error.keyPattern.email) {
-        console.error('Error creating user:', error);
-        req.flash('error', 'Email already exists.');
-        res.render('signUp', { error: 'Email already exists.', messages: req.flash() }); // Pass flash messages to the view
-      } else if (error.code === 11000 && error.keyPattern && error.keyPattern.username) {
-        console.error('Error creating user:', error);
-        req.flash('error', 'Username already exists');
-        res.render('signUp', { error: 'Username already exists.', messages: req.flash() }); // Pass flash messages to the view
-      } else {
-        throw error;
-      }
-    }
-  } catch (error) {
-    console.error('Error creating user:', error);
-    res.redirect('/signUp');
-  }
 });
 
 router.post('/signUp', async (req, res) => {
