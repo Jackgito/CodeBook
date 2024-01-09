@@ -7,8 +7,8 @@
     <%- include("./partials/navbarGuest") %>
     <div class="pageContainer">
 
-      <!-- Login Form -->
-      <form action="/signUp" method="POST">
+      <!-- Sign up form -->
+      <form action="/signUp" method="POST" id="signUpForm">
         <h4 id="formTitle">Sign up</h4>
 
           <!-- Name -->
@@ -40,7 +40,7 @@
             <i class="material-icons prefix">lock</i>
             <input id="confirmPassword" type="password" name="confirmPassword">
             <label for="confirmPassword">Confirm Password</label>
-            <span class="helper-text" id="invalidConfirmPassword"></span>
+            <span class="helper-text" id="confirmPasswordError"></span>
           </div>
 
           <button type="submit" class="btn">Sign up</button>

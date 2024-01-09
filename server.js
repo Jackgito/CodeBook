@@ -1,5 +1,3 @@
-//https://docs.google.com/document/d/1zSfVZcnv7FUnu6VxwKLXBPZHqTIdRX1w3d9Yer_mKVU/edit#heading=h.z9sfsn1d1vz6
-
 const express = require("express");   // For server communication
 const mongoose = require("mongoose"); // For database management
 const passport = require("passport"); // For authentication

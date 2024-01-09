@@ -2,7 +2,6 @@ Questions:
 Best way to pass data from route/server to the JS file
 
 TODO:
-Password verification
 Comment votes
 Edit and delete questions/answers
 
@@ -13,3 +12,5 @@ password1
 
 Codebook
 D7SeTmolljnr4wKb
+
+//https://docs.google.com/document/d/1zSfVZcnv7FUnu6VxwKLXBPZHqTIdRX1w3d9Yer_mKVU/edit#heading=h.z9sfsn1d1vz6
