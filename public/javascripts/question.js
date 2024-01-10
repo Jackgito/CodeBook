@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
         userVote = await getUserVoteValue(userID, questionID);
         setButtonColors();
       } catch (error) {
-        console.error("Error getting user vote:", error);
+        // console.error("Error getting user vote:", error);
       }
     }
   }
@@ -51,8 +51,7 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   function showLoginMessage() {
-    let loginMessage = document.getElementById('loginMessage');
-    loginMessage.style.display = 'block';
+    M.toast({ html: 'You have to login to vote.', classes: 'red' });
   }
 
   async function setButtonColors() {
@@ -80,8 +79,7 @@ document.addEventListener('DOMContentLoaded', function() {
   function vote(voteValue) {
     if (clickCount >= maxClicks) {
       // User has reached the maximum allowed clicks
-      let clickMessage = document.getElementById('clickMessage');
-      clickMessage.style.display = 'block';
+      M.toast({ html: 'You have exceeded the vote limit.', classes: 'red' });
       return;
     }
 
