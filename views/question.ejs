@@ -22,6 +22,7 @@
     <div class="row">
       <div class="col s12">
 
+        <!-- Question -->
         <% if (question) { %>
           <div class="card">
             <div class="card-content">
@@ -37,36 +38,38 @@
                 <p id="clickMessage" style="display: none;">You have exceeded the vote limit.</p>
                 <a class="btn-floating waves-effect waves-light" id="thumbsUp"><i class="material-icons">thumb_up</i></a>
                 <a class="btn-floating waves-effect waves-light" id="thumbsDown"><i class="material-icons">thumb_down</i></a>
-
+                
                 <% if (isAuthenticated.username == question.author) { %>
-                  <a href="questions/edit/<%= question.title %>" class="waves-effect waves-light btn">Edit</a>
-                  <a href="questions/delete/<%= question.title %>" class="waves-effect waves-light btn">Delete</a>
+                  <button id="editBtn" class="waves-effect waves-light btn">Edit</button>
+                  <button id="deleteBtn" class="waves-effect waves-light btn">Delete</button>
                 <% } %>
               </div>
             </div>
           </div>
 
+          <!-- Comments -->
           <% if (question.comments && question.comments.length > 0) { %>
             <h4>Comments</h4>
-            <% question.comments.forEach(comment => { %>
+            <% question.comments.forEach((comment, index) => { %>
               <div class="card">
                 <div class="card-content">
-                  <span class="card-title">
-                    <ul>
-                      <li><%= comment.comment %></li>
-                    </ul>
-                  </span>
+                  <p><%= comment.comment %></p>
                   <div class="buttonContainer">
                     <p>Answered <%= timeSince(comment.createdAt) %> by <%= comment.author %></p>
-                    <p>Votes: <%= comment.votes %></p>
-                    <a class="btn-floating waves-effect waves-light thumbsUpComment" data-comment-id="<%= comment._id %>"><i class="material-icons">thumb_up</i></a>
-                    <a class="btn-floating waves-effect waves-light thumbsDownComment" data-comment-id="<%= comment._id %>"><i class="material-icons">thumb_down</i></a>
+                    <p>Votes: <span id="voteCountComment_<%= index %>"><%= comment.votes %></span></p>
+                    <a class="btn-floating waves-effect waves-light thumbsUpComment" id="thumbsUpComment_<%= index %>"><i class="material-icons">thumb_up</i></a>
+                    <a class="btn-floating waves-effect waves-light thumbsDownComment" id="thumbsDownComment_<%= index %>"><i class="material-icons">thumb_down</i></a>
+
+                    <% if (isAuthenticated.username == comment.author) { %>
+                      <button class="waves-effect waves-light btn editBtnComment" data-comment-index="<%= index %>">Edit</button>
+                      <button class="waves-effect waves-light btn deleteBtnComment" data-comment-index="<%= index %>">Delete</button>
+                    <% } %>
                   </div>
                 </div>
               </div>
             <% }); %>
           <% } %>
-          
+
           <!-- Comment field for authenticated users -->
           <% if (isAuthenticated.value) { %>
             <form action="/questions/<%= question.id %>/addComment" method="POST" id="commentForm">
@@ -106,6 +109,8 @@
   
     return result ? result + ' ago' : 'today';
   } %>
+
+
   
   <script type="text/javascript" src="/javascripts/question.js"></script>
 </body>

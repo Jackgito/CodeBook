@@ -47,18 +47,6 @@ router.post('/questions/:title', async (req, res) => {
 });
 
 
-// Edit question (WIP)
-router.get('/questions/edit/:title', async (req, res) => {
-  const isAuthenticated = req.isAuthenticated()
-  res.render('newQuestion', {isAuthenticated: isAuthenticated});
-});
-
-// Delete question (WIP)
-router.delete('/questions/:title', async (req, res) => {
-  await Question.findByTitleAndDelete(req.params.title);
-  res.redirect('/');
-});
-
 // Load existing question page
 router.get('/questions/:url', async (req, res) => {
   try {
@@ -89,7 +77,6 @@ router.get('/questions/:url', async (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 });
-
 
 // Handle vote updates
 router.post('/questions/update/votes', async (req, res) => {
@@ -140,6 +127,58 @@ function timeSince(date) {
 
   return result ? result + ' ago' : 'today';
 }
+
+// Delete question 
+router.delete('/questions/:questionID', async (req, res) => {
+  const questionID = req.params.questionID;
+
+  // Find the question by ID and delete it
+  Question.findByIdAndDelete(questionID)
+    .then(() => {
+      console.log('Question deleted!');
+      res.redirect('/');
+    })
+    .catch(err => {
+      console.error('Error deleting question', err);
+      res.status(500).send('Error deleting question');
+    });
+});
+
+// Edit question
+router.get('/questions/edit/:questionID', ensureAuthenticated, async (req, res) => {
+  const question = await Question.findById(req.params.questionID);
+  if (!question) {
+    return res.redirect('/');
+  }
+  res.render('editQuestion', {
+    isAuthenticated: {
+      user: req.isAuthenticated() ? req.user.username : null,
+      value: req.isAuthenticated(),
+    },
+    question: question
+  });
+});
+
+router.put('/questions/edit/:questionID', async (req, res) => {
+  try {
+    const { title, content } = req.body;
+    
+    const question = await Question.findById(req.params.questionID);
+    if (!question) {
+      return res.sendStatus(404); // Not Found
+    }
+
+    question.title = title;
+    question.question = content;
+
+    await question.save();
+
+    res.sendStatus(200); // OK
+  } catch (error) {
+    console.error('Error updating question:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
 
 
 module.exports = router;

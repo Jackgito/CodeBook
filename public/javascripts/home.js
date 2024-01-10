@@ -1,6 +1,6 @@
+// This is called when a question link is clicked
 function loadQuestion(questionId, url) {
   try {
-
     fetch(url)
       .then(response => {
         if (!response.ok) {

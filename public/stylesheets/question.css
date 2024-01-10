@@ -8,6 +8,15 @@
     width: 80%;
 }
 
+.card-content {
+    margin: 0px;
+    padding: 10px !important;
+}
+
+.row {
+    max-width: 1000px;
+}
+
 .votes {
     margin-top: 20px;
 }
@@ -26,9 +35,12 @@
 .buttonContainer p,
 .buttonContainer a {
     margin-top: 2px;
-    margin-right: 8px; /* Adjust as needed for the desired percentage spacing */
+    margin-right: 8px;
 }
 
+.btn {
+    margin-right: 10px;
+}
 
 #answerForm {
     margin-top: 40px;

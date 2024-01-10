@@ -12,7 +12,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (userAuthenticated == "true") {
       try {
         userVote = await getUserVoteValue(userID, questionID);
-        console.log("User vote:", userVote);
         setButtonColors();
       } catch (error) {
         console.error("Error getting user vote:", error);
@@ -57,7 +56,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   async function setButtonColors() {
-    console.log("uservote: ", userVote)
     let thumbsUpButton = document.getElementById('thumbsUp');
     let thumbsDownButton = document.getElementById('thumbsDown');
 
@@ -136,7 +134,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const request = { userID, votes: { questionID: questionID, userVote: userVote } };
   
       // Make a POST request to the server endpoint
-      const response = await fetch('/users/update/vote', {
+        await fetch('/users/update/vote', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -144,15 +142,6 @@ document.addEventListener('DOMContentLoaded', function() {
         body: JSON.stringify(request),
       });
   
-      // Check if the response is successful (status code 200-299)
-      if (response.ok) {
-        // Parse the JSON response
-        const data = await response.json();
-        console.log('Vote updated successfully:', data.message);
-      } else {
-        // Handle errors for non-successful responses
-        console.error('Error:', response.statusText);
-      }
     } catch (error) {
       // Handle network errors or other exceptions
       console.error('Error:', error.message);
@@ -176,7 +165,6 @@ document.addEventListener('DOMContentLoaded', function() {
       });
   
       const data = await response.json();
-      console.log('User Vote Value:', data.userVote);
       return data.userVote ?? 0;
   
     } catch (error) {
@@ -184,40 +172,63 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  document.getElementById("commentForm").addEventListener("submit", function (event) {
-    event.preventDefault(); // Prevent the default form submission
-  
-    // Get values from HTML elements
-    const commentValue = document.getElementById("comment").value;
-    const usernameValue = document.getElementById("username").getAttribute("username");
-    const questionIDValue = document.getElementById("questionID").getAttribute("questionID");
-  
-    // Perform POST request
-    fetch(`/questions/add/comment`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        comment: commentValue,
-        username: usernameValue,
-        questionID: questionIDValue
-      }),
-    })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.json();
+  if (userAuthenticated == "true") {
+    document.getElementById("commentForm").addEventListener("submit", function (event) {
+      event.preventDefault(); // Prevent the default form submission
+    
+      // Get values from HTML elements
+      const commentValue = document.getElementById("comment").value;
+      const usernameValue = document.getElementById("username").getAttribute("username");
+      const questionIDValue = document.getElementById("questionID").getAttribute("questionID");
+    
+      // Perform POST request
+      fetch(`/questions/add/comment`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          comment: commentValue,
+          username: usernameValue,
+          questionID: questionIDValue
+        }),
       })
-      .then(data => {
-        // Handle the response if needed
-        location.reload();
-      })
-      .catch(error => {
-        console.error("Error:", error);
-      });
-  });
-  
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          // Handle the response if needed
+          location.reload();
+        })
+        .catch(error => {
+          console.error("Error:", error);
+        });
+    });
 
+    const deleteBtn = document.getElementById('deleteBtn');
+
+    deleteBtn.addEventListener('click', () => {
+      if(confirm('Are you sure you want to delete this question?')) {
+        // User confirmed deletion, send delete request
+        fetch(`/questions/${questionID}`, {
+          method: 'DELETE'
+        })
+        .then(response => {
+          window.location.href = '/'; 
+        })
+        .catch(err => {
+          console.error(err);
+        });      
+      }
+    }); 
+    
+    const editBtn = document.getElementById('editBtn');
+    editBtn.addEventListener('click', () => {
+      window.location.href = `/questions/edit/${questionID}`;
+    });
+    
+  }
 });

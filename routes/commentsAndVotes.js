@@ -52,9 +52,6 @@ router.post('/users/update/vote', async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Make sure user.votes is an array
-    user.votes = user.votes || [];
-
     // Find the vote for the specified questionID
     const existingVoteIndex = user.votes.findIndex(v => v.questionID.equals(vote.questionID));
 

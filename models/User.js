@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const voteSchema = new mongoose.Schema({
   questionID: { type: mongoose.Schema.Types.ObjectId, ref: 'Question', required: true },
-  userVote: { type: Number, enum: [-1, 1], required: true },
+  userVote: { type: Number, enum: [-1, 0, 1], required: true },
 });
 
 const userSchema = new mongoose.Schema({
