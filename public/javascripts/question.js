@@ -1,113 +1,103 @@
 document.addEventListener('DOMContentLoaded', function() {
   const userID = document.getElementById('userID').getAttribute('userID');
   const questionID = document.getElementById("questionID").getAttribute('questionID');
-  let userAuthenticated = document.getElementById('isAuthenticated').getAttribute('isAuthenticated');
-  let voteCount = parseInt(document.getElementById('voteCount').innerText.split(' ')[1]);
-  
-  const voteButtonColor = getComputedStyle(document.body).getPropertyValue('--secondary-color');
-  // Get current user's vote
-  let userVote = 0;
+  const likeButton = document.getElementById('likeButton')
+  const dislikeButton = document.getElementById('dislikeButton')
 
-  async function getVote() {
-    if (userAuthenticated == "true") {
-      try {
-        userVote = await getUserVoteValue(userID, questionID);
-        setButtonColors();
-      } catch (error) {
-        // console.error("Error getting user vote:", error);
-      }
-    }
-  }
-  
-  getVote();
+  let userAuthenticated = document.getElementById('isAuthenticated').getAttribute('isAuthenticated');
   
   let maxClicks = 10;
   let clickCount = 0;
 
-  // Thumbs Up Button
-  let thumbsUpButton = document.getElementById('thumbsUp');
-  thumbsUpButton.addEventListener('click', function() {
-    if (userAuthenticated == "true") {
-      vote(1);
-      setButtonColors();
-      updateTotalVotesToDB(voteCount, questionID);
-      updateUserVoteToDB(userID, userVote, questionID)
-    } else {
-      showLoginMessage();
+  // Set initial button colors
+  const setInitialButtonColors = async () => {
+
+    // Set question vote colors
+    let currentVote = await getQuestionUserVote(questionID, userID);
+    setButtonColors(currentVote, likeButton, dislikeButton);
+
+    // Set comment vote colors
+    // Get the total number of comments
+    const allComments = document.querySelectorAll('.comment').length;
+    console.log(allComments)
+
+    // Iterate over each comment and apply setButtonColors
+    for (let index = 0; index < allComments; index++) {
+      // Get the like and dislike buttons for the current comment
+      const likeButton = document.querySelector(`.thumbsUp_${index}`);
+      const dislikeButton = document.querySelector(`.thumbsDown_${index}`);
+      let commentID = document.getElementById(`commentID_${index}`).getAttribute('commentID');
+
+      currentVote = await getCommentUserVote(commentID, userID, questionID);
+      console.log(currentVote, likeButton, dislikeButton);
+      
+      // Call the setButtonColors function for the current comment
+      setButtonColors(currentVote, likeButton, dislikeButton);
     }
-  });
+  };
 
-  // Thumbs Down Button
-  let thumbsDownButton = document.getElementById('thumbsDown');
-  thumbsDownButton.addEventListener('click', function() {
-    if (userAuthenticated == "true") {
-      vote(-1);
-      setButtonColors();
-      updateTotalVotesToDB(voteCount, questionID);
-      updateUserVoteToDB(userID, userVote, questionID)
-    } else {
-      showLoginMessage();
+  if (userAuthenticated == "true") { setInitialButtonColors(questionID, userID, likeButton, dislikeButton)};
+
+  window.voteQuestion = async function (button) {
+    // Check if user has logged in
+    if (userAuthenticated == "false") {
+      M.toast({ html: 'You must be logged in to vote.', classes:'red' });
+      return;
     }
-  });
-
-  function showLoginMessage() {
-    M.toast({ html: 'You have to login to vote.', classes: 'red' });
-  }
-
-  async function setButtonColors() {
-    let thumbsUpButton = document.getElementById('thumbsUp');
-    let thumbsDownButton = document.getElementById('thumbsDown');
-
-    if (userVote === 1) {
-      thumbsUpButton.classList.remove(voteButtonColor);
-      thumbsUpButton.classList.add('green');
-      thumbsDownButton.classList.remove('green', 'red');
-      thumbsDownButton.classList.add(voteButtonColor);
-    } else if (userVote === -1) {
-      thumbsDownButton.classList.remove(voteButtonColor);
-      thumbsDownButton.classList.add('red');
-      thumbsUpButton.classList.remove('green', 'red');
-      thumbsUpButton.classList.add(voteButtonColor);
-    } else {
-      thumbsUpButton.classList.remove('green', 'red');
-      thumbsUpButton.classList.add(voteButtonColor);
-      thumbsDownButton.classList.remove('green', 'red');
-      thumbsDownButton.classList.add(voteButtonColor);
+  
+    // Check if user has voted too many times
+    if (checkMaxVotes(clickCount, maxClicks)) {
+      return;
     }
-  }
-
-  function vote(voteValue) {
-    if (clickCount >= maxClicks) {
-      // User has reached the maximum allowed clicks
-      M.toast({ html: 'You have exceeded the vote limit.', classes: 'red' });
+  
+    let likeButton = document.querySelector(`.thumbsUp_-1`);
+    let dislikeButton = document.querySelector(`.thumbsDown_-1`);
+  
+    let currentVote = await getQuestionUserVote(questionID, userID);
+  
+    currentVote = getUpdatedVote(button, currentVote);
+    setButtonColors(currentVote, likeButton, dislikeButton);
+    updateQuestionVotesToDB(currentVote, userID, questionID);
+  
+    document.getElementById('votes').innerText = currentVote + ' votes';
+  };
+  
+  window.voteComment = async function (button) {
+    // Check if user has logged in
+    if (userAuthenticated == "false") {
+      M.toast({ html: 'You must be logged in to vote.', classes:'red' });
       return;
     }
 
-    if (userVote === voteValue) {
-      // If the user clicks the same button again, remove the vote
-      userVote = 0;
-      voteCount -= voteValue;
-      clickCount++;
-    } else if (userVote === -voteValue) {
-      // If the user clicks the other button, toggle the vote
-      voteCount += 2 * voteValue;
-      userVote = voteValue;
-      clickCount++;
-    } else {
-      // If the user hasn't voted yet, toggle the vote
-      voteCount += voteValue;
-      userVote = voteValue;
-      clickCount++;
+    // Check if user has voted too many times
+    if (checkMaxVotes(clickCount, maxClicks)) {
+      return;
     }
 
-    document.getElementById('voteCount').innerText = 'Votes: ' + voteCount;
-  }
+    // Get the comment index from the button's data attribute
+    let commentIndex = button.dataset.commentIndex;
   
-  // Saves total votes to database
-  async function updateTotalVotesToDB(voteCount, questionId) {
+    // Select the vote up and vote down buttons for the specific comment
+    let likeButton = document.querySelector(`.thumbsUp_${commentIndex}`);
+    let dislikeButton = document.querySelector(`.thumbsDown_${commentIndex}`);
+    let commentID = document.getElementById(`commentID_${commentIndex}`).getAttribute('commentID');
+    
+    let currentVote = await getCommentUserVote(commentID, userID, questionID);
+
+    currentVote = getUpdatedVote(button, currentVote)
+    console.log(currentVote)
+    setButtonColors(currentVote, likeButton, dislikeButton);
+    updateCommentVotesToDB(currentVote, userID, questionID, commentID);
+
+    document.getElementById(`voteCountComment_${commentIndex}`).innerText = currentVote + ' votes';
+  };
+  
+  // Saves question votes to database
+  async function updateQuestionVotesToDB(currentVote, userID, questionID) {
     const request = {
-      voteCount: voteCount,
-      questionId: questionId
+      currentVote: currentVote,
+      questionID: questionID,
+      userID: userID,
     }
     fetch("/questions/update/votes", {
       method: 'POST',
@@ -116,60 +106,44 @@ document.addEventListener('DOMContentLoaded', function() {
       },
       body: JSON.stringify(request),
     })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .catch(error => {
-        console.error('Error:', error.message);
-      });
-  }
-
-  async function updateUserVoteToDB(userID, userVote, questionID) {
-    try {
-      const request = { userID, votes: { questionID: questionID, userVote: userVote } };
-  
-      // Make a POST request to the server endpoint
-        await fetch('/users/update/vote', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(request),
-      });
-  
-    } catch (error) {
-      // Handle network errors or other exceptions
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .catch(error => {
       console.error('Error:', error.message);
-    }
+    });
   }
 
-  // Retrieve the current user's vote value (check what have they voted for)
-  async function getUserVoteValue(userID, questionID) {
-    try {
-  
-      // Make a POST request to the server endpoint with data included
-      const response = await fetch('/users/get/vote', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          questionID: questionID,
-          userID: userID,
-        }),
-      });
-  
-      const data = await response.json();
-      return data.userVote ?? 0;
-  
-    } catch (error) {
-      console.error('Error:', error);
+  // Saves comment votes to database
+  async function updateCommentVotesToDB(currentVote, userID, questionID, commentID) {
+    const request = {
+      currentVote: currentVote,
+      questionID: questionID,
+      userID: userID,
+      commentID: commentID,
     }
+    fetch("/comments/update/votes", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(request),
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .catch(error => {
+      console.error('Error:', error.message);
+    });
   }
 
+  // Functionality for authenticated users (edit, delete)
   if (userAuthenticated == "true") {
     document.getElementById("commentForm").addEventListener("submit", function (event) {
       event.preventDefault(); // Prevent the default form submission
@@ -177,7 +151,6 @@ document.addEventListener('DOMContentLoaded', function() {
       // Get values from HTML elements
       const commentValue = document.getElementById("comment").value;
       const usernameValue = document.getElementById("username").getAttribute("username");
-      const questionIDValue = document.getElementById("questionID").getAttribute("questionID");
     
       // Perform POST request
       fetch(`/questions/add/comment`, {
@@ -188,7 +161,7 @@ document.addEventListener('DOMContentLoaded', function() {
         body: JSON.stringify({
           comment: commentValue,
           username: usernameValue,
-          questionID: questionIDValue
+          questionID: questionID
         }),
       })
         .then(response => {
@@ -206,12 +179,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // Question deletion
     const deleteBtn = document.getElementById('deleteBtn');
 
     deleteBtn.addEventListener('click', () => {
       if(confirm('Are you sure you want to delete this question?')) {
         // User confirmed deletion, send delete request
-        fetch(`/questions/${questionID}`, {
+        fetch(`/questions/delete/${questionID}`, {
           method: 'DELETE'
         })
         .then(response => {
@@ -221,12 +195,145 @@ document.addEventListener('DOMContentLoaded', function() {
           console.error(err);
         });      
       }
-    }); 
+    });
+
+    // Comment deletion 
+    // Select all elements with the class 'deleteBtnComment'
+    const deleteButtons = document.querySelectorAll('.deleteBtnComment');
+
+    // Iterate through each delete button and attach the click event listener
+    deleteButtons.forEach(deleteBtn => {
+      deleteBtn.addEventListener('click', () => {
+        // Extract the comment ID from the data attribute
+        const commentID = deleteBtn.getAttribute('data-comment-id');
+
+        if (confirm('Are you sure you want to delete this comment?')) {
+          fetch(`/comments/delete/${questionID}/${commentID}`, {
+            method: 'DELETE'
+          })
+          .then(response => {
+            if (response.ok) {
+              window.location.reload();
+            } else {
+              console.error('Failed to delete comment');
+            }
+          })
+          .catch(err => {
+            console.error(err);
+          });
+        }
+      });
+    });
+
     
     const editBtn = document.getElementById('editBtn');
     editBtn.addEventListener('click', () => {
       window.location.href = `/questions/edit/${questionID}`;
-    });
+    }); 
+  }
+
+  // Get vote value for the comment or question when voting
+  function getUpdatedVote(button, currentVote) {
+
+    // Check if the button has the "thumbsUp" class
+    let hasThumbsUpClass = button.classList.contains("thumbsUp");
     
+    // Check if the button has the "thumbsDown" class
+    let hasThumbsDownClass = button.classList.contains("thumbsDown");
+    clickCount++;
+
+    if (hasThumbsUpClass) {
+      if (currentVote === 1) {
+        currentVote = 0;
+      } else {
+        currentVote = 1;
+      }
+    } else if (hasThumbsDownClass) {
+      if (currentVote === -1) {
+        currentVote = 0;
+      } else {
+        currentVote = -1;
+      }
+    }
+    return currentVote;
+  };
+
+  // Update vote button colors
+  function setButtonColors(currentVote, likeButton, dislikeButton) {
+    
+    if (currentVote === 1) {
+      likeButton.classList.add('green');
+      dislikeButton.classList.remove('red');
+      return;
+    }
+
+    if (currentVote === -1) {
+      dislikeButton.classList.add('red');
+      likeButton.classList.remove('green');
+      return;
+    }
+
+    dislikeButton.classList.remove('red');
+    likeButton.classList.remove('green');
+  };
+
+
+  // Function to get the user vote value for a question
+  async function getQuestionUserVote(questionID, userID) {
+    try {
+      const response = await fetch('/questions/get/vote', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ questionID, userID }),
+      });
+  
+      const data = await response.json();
+  
+      if (data.error) {
+        console.error('Error:', data.error);
+        return 0;
+      } else {
+        return data.userVoteValue || 0;
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      return 0;
+    }
+  }
+
+  // Function to get the user vote value for a comment
+  async function getCommentUserVote(commentID, userID, questionID) {
+    try {
+      const response = await fetch('/comments/get/vote', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ commentID, userID, questionID }),
+      });
+  
+      const data = await response.json();
+  
+      if (data.error) {
+        console.error('Error:', data.error);
+        return 0;
+      } else {
+        console.log('User vote value:', data.voteValue);
+        return data.voteValue || 0;
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      return 0;
+    }
+  }
+
+  function checkMaxVotes(clickCount, maxClicks) {
+    if (clickCount >= maxClicks) {
+      // User has reached the maximum allowed clicks
+      M.toast({ html: 'You have exceeded the vote limit.', classes: 'red' });
+      return true;
+    }
   }
 });

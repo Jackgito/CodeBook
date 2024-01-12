@@ -23,7 +23,7 @@
           <% } %>
           </div>
           
-          <% posts.forEach(post => { %>
+          <% questions.forEach(question => { %>
             <div class="card">
               <div class="card-content">
                 <div class="row">
@@ -33,18 +33,18 @@
                     <span class="card-title">
                       
                       <p class="votes" id="votes">
-                        <% if (post.votes >= 1000) { %>
-                          <%= (post.votes / 1000).toFixed(1) %>k votes
+                        <% if (question.totalVotes >= 1000) { %>
+                          <%= (question.totalVotes / 1000).toFixed(1) %>k votes
                         <% } else { %>
-                          <%= post.votes %> votes
+                          <%= question.totalVotes %> votes
                         <% } %>
                       </p>
                       
                       <p class="views" id="views">
-                        <% if (post.views >= 1000) { %>
-                          <%= (post.views / 1000).toFixed(1) %>k views
+                        <% if (question.views >= 1000) { %>
+                          <%= (question.views / 1000).toFixed(1) %>k views
                         <% } else { %>
-                          <%= post.views %> views
+                          <%= question.views %> views
                         <% } %>
                       </p>
                       
@@ -55,11 +55,11 @@
                   <div class="col s7" style="width: 60%;">
                     <span class="card-title">
                       <!-- Create a link with data attributes -->
-                      <a href="/questions/<%= post.url %>" class="title" id="title"><%= post.title %></a>
+                      <a href="/questions/<%= question.url %>" class="title" id="title"><%= question.title %></a>
                       
                       <!-- Shorten long questions -->
                       <p class="question" id="question">
-                        <%= post.question.length > 100 ? post.question.slice(0, 100) + '...' : post.question %>
+                        <%= question.question.length > 100 ? question.question.slice(0, 100) + '...' : question.question %>
                       </p>
                     </span>
                   </div>
@@ -67,8 +67,8 @@
                   <!-- Right Column -->
                   <div class="col s4" style="width: 30%;">
                     <span class="card-title">
-                      <p class="right-align" id="author"><%= post.author %> asked at <%= post.createdAt.toLocaleDateString() %></p>
-                      <p class="tags" id="tags"><%= post.tags %></p>
+                      <p class="right-align" id="author"><%= question.author %> asked at <%= question.createdAt.toLocaleDateString() %></p>
+                      <p class="tags" id="tags"><%= question.tags %></p>
                     </span>
                   </div>
                 </div>

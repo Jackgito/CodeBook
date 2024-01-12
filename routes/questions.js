@@ -29,11 +29,11 @@ router.post('/questions/:title', async (req, res) => {
         title: req.body.questionTitle,
         question: req.body.question,
         createdAt: new Date(),
-        votes: 0,
+        votes: [{ totalVotes: 0, voters: [] }],
         views: 0,
         tags: req.body.tags || [],
         author: req.body.username || "Anonymous",
-        url: url, // Encode the title to create the URL
+        url: url,
       });
 
       // Save the new question to the database
@@ -78,23 +78,98 @@ router.get('/questions/:url', async (req, res) => {
   }
 });
 
+// Get user's vote value for a question
+router.post('/questions/get/vote', async (req, res) => {
+  const { questionID, userID } = req.body;
+  try {
+    const question = await Question.findOne({ _id: questionID });
+    const vote = question.voters.find(v => v.userID === userID);
+    console.log(vote)
+
+    if (vote) {
+      res.status(200).json({ userVoteValue: vote.userVoteValue });
+    } else {
+      res.status(404).json({ error: 'Vote not found' });
+    }
+  } catch (error) {
+    console.error('Error retrieving vote value:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 // Handle vote updates
 router.post('/questions/update/votes', async (req, res) => {
-  const { voteCount, questionId } = req.body;
-  try {
+  const { currentVote, userID, questionID } = req.body;
 
-    // Find the question in the database by ID and update the votes
-    const question = await Question.findByIdAndUpdate(
-      questionId,
-      { $set: { votes: voteCount } }, // Use $set to set the field to the specified value
-      { new: true }
-    );
+  try {
+    // Find the question in the database by ID
+    const question = await Question.findById(questionID);
+
+    if (!question) {
+      return res.status(404).json({ success: false, error: 'Question not found' });
+    }
+
+    // Check if the user has already voted for this question
+    const userVoteIndex = question.voters.findIndex(vote => vote.userID === userID);
+
+    if (userVoteIndex !== -1) {
+      // User has already voted, update the existing vote
+      const previousVoteValue = question.voters[userVoteIndex].userVoteValue;
+
+      // Update the user's current vote value
+      question.voters[userVoteIndex].userVoteValue = currentVote;
+
+      // Update totalVotes by subtracting the previous vote value
+      // and adding the current vote value
+      question.totalVotes = question.totalVotes - previousVoteValue + currentVote;
+    } else {
+      // User hasn't voted yet, add a new vote
+      question.voters.push({ userID: userID, userVoteValue: currentVote });
+
+      // Update totalVotes by adding the current vote value
+      question.totalVotes += currentVote;
+    }
+
+    // Save the updated question to the database
+    await question.save();
 
     res.json({ success: true, question });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, error: 'Internal Server Error' });
   }
+});
+
+
+// Delete question 
+router.delete('/questions/delete/:questionID', async (req, res) => {
+  const questionID = req.params.questionID;
+
+  // Find the question by ID and delete it
+  Question.findByIdAndDelete(questionID)
+    .then(() => {
+      console.log('Question deleted!');
+      res.redirect('/');
+    })
+    .catch(err => {
+      console.error('Error deleting question', err);
+      res.status(500).send('Error deleting question');
+    });
+});
+
+// Edit question
+router.get('/questions/edit/:questionID', ensureAuthenticated, async (req, res) => {
+  const question = await Question.findById(req.params.questionID);
+  if (!question) {
+    return res.redirect('/');
+  }
+  res.render('editQuestion', {
+    isAuthenticated: {
+      user: req.isAuthenticated() ? req.user.username : null,
+      value: req.isAuthenticated(),
+    },
+    question: question
+  });
 });
 
 async function fetchQuestion(title) {
@@ -127,58 +202,6 @@ function timeSince(date) {
 
   return result ? result + ' ago' : 'today';
 }
-
-// Delete question 
-router.delete('/questions/:questionID', async (req, res) => {
-  const questionID = req.params.questionID;
-
-  // Find the question by ID and delete it
-  Question.findByIdAndDelete(questionID)
-    .then(() => {
-      console.log('Question deleted!');
-      res.redirect('/');
-    })
-    .catch(err => {
-      console.error('Error deleting question', err);
-      res.status(500).send('Error deleting question');
-    });
-});
-
-// Edit question
-router.get('/questions/edit/:questionID', ensureAuthenticated, async (req, res) => {
-  const question = await Question.findById(req.params.questionID);
-  if (!question) {
-    return res.redirect('/');
-  }
-  res.render('editQuestion', {
-    isAuthenticated: {
-      user: req.isAuthenticated() ? req.user.username : null,
-      value: req.isAuthenticated(),
-    },
-    question: question
-  });
-});
-
-router.put('/questions/edit/:questionID', async (req, res) => {
-  try {
-    const { title, content } = req.body;
-    
-    const question = await Question.findById(req.params.questionID);
-    if (!question) {
-      return res.sendStatus(404); // Not Found
-    }
-
-    question.title = title;
-    question.question = content;
-
-    await question.save();
-
-    res.sendStatus(200); // OK
-  } catch (error) {
-    console.error('Error updating question:', error);
-    res.status(500).send('Internal Server Error');
-  }
-});
 
 
 module.exports = router;

@@ -7,6 +7,8 @@
 
 <body>
   <!-- These values are used in the JS file -->
+  <div id="Question" Question="<%= question %>"></div>
+
   <div id="isAuthenticated" isAuthenticated="<%= isAuthenticated?.value %>"></div>
   <div id="username" username="<%= isAuthenticated?.username %>"></div>
   <div id="questionID" questionID="<%= question.id %>"></div>
@@ -33,9 +35,17 @@
               <p><%= question.question %></p>
 
               <div class="buttonContainer">
-                <p id="voteCount">Votes: <%= question.votes || 0 %></p>
-                <a class="btn-floating waves-effect waves-light" id="thumbsUp"><i class="material-icons">thumb_up</i></a>
-                <a class="btn-floating waves-effect waves-light" id="thumbsDown"><i class="material-icons">thumb_down</i></a>
+
+                <p class="votes" id="votes">
+                  <% if (question.totalVotes >= 1000) { %>
+                    <%= (question.totalVotes / 1000).toFixed(1) %>k votes
+                  <% } else { %>
+                    <%= question.totalVotes %> votes
+                  <% } %>
+                </p>
+
+                <a class="btn-floating waves-effect waves-light thumbsUp_-1" id="likeButton"><i class="material-icons thumbsUp" onclick="voteQuestion(this)">thumb_up</i></a>
+                <a class="btn-floating waves-effect waves-light thumbsDown_-1" id="dislikeButton"><i class="material-icons thumbsDown" onclick="voteQuestion(this)">thumb_down</i></a>
                 
                 <% if (isAuthenticated.username == question.author) { %>
                   <button id="editBtn" class="waves-effect waves-light btn">Edit</button>
@@ -46,31 +56,42 @@
           </div>
 
           <!-- Comments -->
-          <% if (question.comments && question.comments.length > 0) { %>
+          <% if (question.comments.length > 0) { %>
             <h4>Comments</h4>
             <% question.comments.forEach((comment, index) => { %>
-              <div class="card">
+              <div class="comment card">
                 <div class="card-content">
                   <p><%= comment.comment %></p>
+                  <div id="commentID_<%= index %>" commentID="<%= comment._id %>"></div>
                   <div class="buttonContainer">
                     <p>Answered <%= timeSince(comment.createdAt) %> by <%= comment.author %></p>
-                    <p>Votes: <span id="voteCountComment_<%= index %>"><%= comment.votes %></span></p>
-                    <a class="btn-floating waves-effect waves-light thumbsUpComment" id="thumbsUpComment_<%= index %>"><i class="material-icons">thumb_up</i></a>
-                    <a class="btn-floating waves-effect waves-light thumbsDownComment" id="thumbsDownComment_<%= index %>"><i class="material-icons">thumb_down</i></a>
-
+                      
+                    <p class="votes" id="voteCountComment_<%= index %>">
+                      <% if (comment.totalVotes >= 1000) { %>
+                        <%= (comment.totalVotes / 1000).toFixed(1) %>k votes
+                      <% } else { %>
+                        <%= comment.totalVotes %> votes
+                      <% } %>
+                    </p>
+                    
+                    <a class="btn-floating waves-effect waves-light thumbsUp thumbsUp_<%= index %>" data-comment-index="<%= index %>" onclick="voteComment(this)"><i class="material-icons">thumb_up</i></a>
+                    <a class="btn-floating waves-effect waves-light thumbsDown thumbsDown_<%= index %>" data-comment-index="<%= index %>" onclick="voteComment(this)"><i class="material-icons">thumb_down</i></a>
+                    
                     <% if (isAuthenticated.username == comment.author) { %>
                       <button class="waves-effect waves-light btn editBtnComment" data-comment-index="<%= index %>">Edit</button>
-                      <button class="waves-effect waves-light btn deleteBtnComment" data-comment-index="<%= index %>">Delete</button>
+                      <button class="waves-effect waves-light btn deleteBtnComment" data-comment-index="<%= index %>" data-comment-id="<%= comment._id %>">Delete</button>
                     <% } %>
                   </div>
                 </div>
               </div>
             <% }); %>
           <% } %>
+          
+
 
           <!-- Comment field for authenticated users -->
           <% if (isAuthenticated.value) { %>
-            <form action="/questions/<%= question.id %>/addComment" method="POST" id="commentForm">
+            <form action="/questions/add/comment" method="POST" id="commentForm">
               <div class="input-field">
                 <textarea id="comment" name="comment" placeholder="Your comment" rows="4" cols="50" required></textarea>
               </div>
@@ -82,34 +103,32 @@
           <p>No question available.</p>
         <% } %>
 
+
+        <% function timeSince(date) {
+          const currentDate = new Date();
+          const pastDate = new Date(date);
+        
+          const years = currentDate.getFullYear() - pastDate.getFullYear();
+          const months = (currentDate.getMonth() - pastDate.getMonth()) + (years * 12);
+          const days = currentDate.getDate() - pastDate.getDate();
+        
+          let result = '';
+        
+          if (months > 0) {
+              result += `${months} ${months === 1 ? 'month' : 'months'}`;
+          }
+        
+          if (days > 0) {
+              result += `${result ? ', ' : ''}${days} ${days === 1 ? 'day' : 'days'}`;
+          }
+        
+          return result ? result + ' ago' : 'today';
+        } %>
+
       </div>
     </div>
   </div>
 
-  <!-- Function to format the comment times -->
-  <% function timeSince(date) {
-    const currentDate = new Date();
-    const pastDate = new Date(date);
-  
-    const years = currentDate.getFullYear() - pastDate.getFullYear();
-    const months = (currentDate.getMonth() - pastDate.getMonth()) + (years * 12);
-    const days = currentDate.getDate() - pastDate.getDate();
-  
-    let result = '';
-  
-    if (months > 0) {
-        result += `${months} ${months === 1 ? 'month' : 'months'}`;
-    }
-  
-    if (days > 0) {
-        result += `${result ? ', ' : ''}${days} ${days === 1 ? 'day' : 'days'}`;
-    }
-  
-    return result ? result + ' ago' : 'today';
-  } %>
-
-
-  
   <script type="text/javascript" src="/javascripts/question.js"></script>
 </body>
 </html>

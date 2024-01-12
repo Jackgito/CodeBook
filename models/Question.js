@@ -3,21 +3,23 @@ const mongoose = require('mongoose');
 const commentSchema = new mongoose.Schema({
   author: {
     type: String,
-    required: false,
+    required: true,
   },
   comment: {
     type: String,
-    required: false,
+    required: true,
   },
-  votes: {
-    type: Number,
-    default: 0,
-    required: false,
-  },
+  voters: [{
+    userID: String,
+    userVoteValue: { type: Number, enum: [-1, 0, 1] }
+  }],
   createdAt: {
     type: Date,
     default: Date.now(),
-    required: false,
+  },
+  totalVotes: {
+    type: Number,
+    default: 0
   },
 });
 
@@ -35,11 +37,10 @@ const questionSchema = new mongoose.Schema({
     default: Date.now(),
     required: false,
   },
-  votes: {
-    type: Number,
-    default: 0,
-    required: false,
-  },
+  voters: [{
+    userID: String,
+    userVoteValue: { type: Number, enum: [-1, 0, 1] }
+  }],
   views: {
     type: Number,
     default: 0,
@@ -60,6 +61,10 @@ const questionSchema = new mongoose.Schema({
   comments: {
     type: [commentSchema],
     required: false,
+  },
+  totalVotes: {
+    type: Number,
+    default: 0
   },
 });
 

@@ -100,6 +100,7 @@ router.post('/login', (req, res, next) => {
   })(req, res, next);
 });
 
+// Handle the sign up
 router.post('/signUp', async (req, res) => {
   try {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
@@ -114,7 +115,8 @@ router.post('/signUp', async (req, res) => {
     try {
       // Save the user to the MongoDB collection named "users"
       await newUser.save();
-      res.redirect('/login');
+      req.flash('success', 'Sign up successfull.');
+      return res.render('login', { messages: req.flash() });
     } catch (error) {
       // Handle uniqueness constraint violation
       if (error.code === 11000 && error.keyPattern && error.keyPattern.email) {
