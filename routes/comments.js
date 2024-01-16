@@ -30,7 +30,7 @@ router.post('/questions/add/comment', async (req, res) => {
   }
 });
 
-// Update the vote count for a comment
+// Update vote count for a comment
 router.post('/comments/update/votes', async (req, res) => {
   const { currentVote, userID, questionID, commentID } = req.body;
 
@@ -48,6 +48,7 @@ router.post('/comments/update/votes', async (req, res) => {
     if (userVoteIndex !== -1) {
       // User has already voted, update the existing vote
       const previousVoteValue = comment.voters[userVoteIndex].userVoteValue;
+      
       comment.voters[userVoteIndex].userVoteValue = currentVote;
 
       // Update totalVotes by subtracting the previous vote value
@@ -87,6 +88,7 @@ router.post('/comments/get/vote', async (req, res) => {
   }
 });
 
+// Delete comment
 router.delete('/comments/delete/:questionID/:commentID', async (req, res) => {
   const { questionID, commentID } = req.params;
 
@@ -139,4 +141,20 @@ router.post('/comments/update/comment', async (req, res) => {
     res.status(500).json({ success: false, message: 'Internal server error' });
   }
 });
+
+// Get total votes for a comment
+router.post('/comments/get/totalVotes', async (req, res) => {
+  const { commentID, questionID } = req.body;
+  try {
+    const question = await Question.findById(questionID);
+    const comment = question.comments.id(commentID);
+    console.log(comment.totalVotes);
+    res.json({ success: true, totalVotes: comment.totalVotes });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, error: 'Internal Server Error' });
+  }
+});
+
+
 module.exports = router;

@@ -222,5 +222,17 @@ function timeSince(date) {
   return result ? result + ' ago' : 'today';
 }
 
+// Get total votes for a question
+router.post('/questions/get/totalVotes', async (req, res) => {
+  const { questionID } = req.body;
+  try {
+    const question = await Question.findById(questionID);
+
+    res.json({ success: true, totalVotes: question.totalVotes });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, error: 'Internal Server Error' });
+  }
+});
 
 module.exports = router;

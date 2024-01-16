@@ -1,40 +1,21 @@
+import { setInitialButtonColors, setButtonColors } from './questionFunctions/voteButtonColors.js';
+import { getCommentUserVote, getQuestionUserVote, checkMaxVotes, getTotalCommentVotes, getTotalQuestionVotes } from './questionFunctions/getVotes.js';
+import { updateQuestionVotesToDB, updateCommentVotesToDB, saveCommentToDB } from './questionFunctions/updateDB.js';
+
 document.addEventListener('DOMContentLoaded', function() {
   const userID = document.getElementById('userID').getAttribute('userID');
   const questionID = document.getElementById("questionID").getAttribute('questionID');
-  const likeButton = document.getElementById('likeButton')
-  const dislikeButton = document.getElementById('dislikeButton')
   const question = document.getElementById('question');
 
   let userAuthenticated = document.getElementById('isAuthenticated').getAttribute('isAuthenticated');
-  let maxClicks = 10;
+  let maxClicks = 50;
   let clickCount = 0;
 
-  // Set initial button colors
-  const setInitialButtonColors = async () => {
+  if (userAuthenticated == "true") {setInitialButtonColors(questionID, userID)};
 
-    // Set question vote colors
-    let currentVote = await getQuestionUserVote(questionID, userID);
-    setButtonColors(currentVote, likeButton, dislikeButton);
-
-    // Set comment vote colors
-    // Get the total number of comments
-    const allComments = document.querySelectorAll('.comment').length;
-
-    // Iterate over each comment and apply setButtonColors
-    for (let index = 0; index < allComments; index++) {
-      // Get the like and dislike buttons for the current comment
-      const likeButton = document.querySelector(`.thumbsUp_${index}`);
-      const dislikeButton = document.querySelector(`.thumbsDown_${index}`);
-      let commentID = document.getElementById(`commentID_${index}`).getAttribute('commentID');
-
-      currentVote = await getCommentUserVote(commentID, userID, questionID);
-      
-      // Call the setButtonColors function for the current comment
-      setButtonColors(currentVote, likeButton, dislikeButton);
-    }
-  };
-
-  if (userAuthenticated == "true") { setInitialButtonColors(questionID, userID, likeButton, dislikeButton)};
+  function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
 
   window.voteQuestion = async function (button) {
     // Check if user has logged in
@@ -53,20 +34,16 @@ document.addEventListener('DOMContentLoaded', function() {
   
     let currentVote = await getQuestionUserVote(questionID, userID);
     let updatedVote = getUpdatedVote(button, currentVote);
-    let totalVotes = parseInt(document.getElementById('votes').innerText);
 
     setButtonColors(updatedVote, likeButton, dislikeButton);
-    updateQuestionVotesToDB(updatedVote, userID, questionID);
+    await updateQuestionVotesToDB(updatedVote, userID, questionID);
   
-
     // Update frontend totals
-    if (currentVote == 0) {
-      document.getElementById('votes').innerText = totalVotes + updatedVote + ' votes';
-    } else if (currentVote == -1) {
-      document.getElementById('votes').innerText = totalVotes + 1 + updatedVote + ' votes';
-    } else {
-      document.getElementById('votes').innerText = totalVotes - 1 - updatedVote + ' votes';
-    }
+    await delay(100); // This is used to fix the async bug
+    let totalVotes = await getTotalQuestionVotes(questionID);
+    console.log(totalVotes);
+    // Update frontend totals
+    document.getElementById("votes").innerText = totalVotes + " votes"
   };
   
   window.voteComment = async function (button) {
@@ -91,70 +68,42 @@ document.addEventListener('DOMContentLoaded', function() {
     
     let currentVote = await getCommentUserVote(commentID, userID, questionID);
     let updatedVote = getUpdatedVote(button, currentVote)
-    let totalVotes = parseInt(document.getElementById(`voteCountComment_${commentIndex}`).innerText);
 
     setButtonColors(updatedVote, likeButton, dislikeButton);
-    updateCommentVotesToDB(updatedVote, userID, questionID, commentID);
+    await updateCommentVotesToDB(updatedVote, userID, questionID, commentID);
 
+    await delay(100); // This is used to fix the async bug
+    let totalVotes = await getTotalCommentVotes(commentID, questionID);
+    console.log(totalVotes);
     // Update frontend totals
-    if (currentVote == 0) {
-      document.getElementById(`voteCountComment_${commentIndex}`).innerText = totalVotes + updatedVote + ' votes';
-    } else if (currentVote == -1) {
-      document.getElementById(`voteCountComment_${commentIndex}`).innerText = totalVotes + 1 + updatedVote + ' votes';
-    } else {
-      document.getElementById(`voteCountComment_${commentIndex}`).innerText = totalVotes - 1 - updatedVote + ' votes';
-    }
+    document.getElementById(`voteCountComment_${commentIndex}`).innerText = totalVotes + " votes"
   };
-  
-  // Saves question votes to database
-  async function updateQuestionVotesToDB(currentVote, userID, questionID) {
-    const request = {
-      currentVote: currentVote,
-      questionID: questionID,
-      userID: userID,
-    }
-    fetch("/questions/update/votes", {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(request),
-    })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      return response.json();
-    })
-    .catch(error => {
-      console.error('Error:', error.message);
-    });
+
+  window.editComment = async function (index) {
+    const commentTextElement = document.querySelector(`#commentText_${index}`);
+    const editCommentInputElement = document.querySelector(`#editComment_${index}`);
+
+    commentTextElement.style.display = 'none'; // Hide comment text
+    editCommentInputElement.style.display = 'block'; // Show edit comment input
+
+    document.getElementById(`commentText_${index}`).style.display = 'none';
+    document.getElementById(`editComment_${index}`).style.display = 'inline-block';
+
+    document.getElementById("editCommentButton_" + index).style.display = 'none';
+    document.getElementById("saveCommentButton_" + index).style.display = 'inline-block'; 
   }
 
-  // Saves comment votes to database
-  async function updateCommentVotesToDB(currentVote, userID, questionID, commentID) {
-    const request = {
-      currentVote: currentVote,
-      questionID: questionID,
-      userID: userID,
-      commentID: commentID,
-    }
-    fetch("/comments/update/votes", {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(request),
-    })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      return response.json();
-    })
-    .catch(error => {
-      console.error('Error:', error.message);
-    });
+  window.saveEditedComment = async function (index, comment, commentID) {
+    // Update comment text and hide the input field
+    const editedComment = document.getElementById(`editComment_${index}`).value;
+    document.getElementById(`commentText_${index}`).innerHTML = editedComment;
+
+    document.getElementById(`commentText_${index}`).style.display = 'inline-block';
+    document.getElementById(`editComment_${index}`).style.display = 'none';
+
+    document.getElementById("editCommentButton_" + index).style.display = 'inline-block';
+    document.getElementById("saveCommentButton_" + index).style.display = 'none'; 
+    saveCommentToDB(editedComment, commentID)
   }
 
   // Functionality for authenticated users (edit, delete)
@@ -272,131 +221,4 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     return currentVote;
   };
-
-  // Update vote button colors
-  function setButtonColors(currentVote, likeButton, dislikeButton) {
-    
-    if (currentVote === 1) {
-      likeButton.classList.add('green');
-      dislikeButton.classList.remove('red');
-      return;
-    }
-
-    if (currentVote === -1) {
-      dislikeButton.classList.add('red');
-      likeButton.classList.remove('green');
-      return;
-    }
-
-    dislikeButton.classList.remove('red');
-    likeButton.classList.remove('green');
-  };
-
-
-  // Get the user vote value for a question
-  async function getQuestionUserVote(questionID, userID) {
-    try {
-      const response = await fetch('/questions/get/vote', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ questionID, userID }),
-      });
-  
-      const data = await response.json();
-  
-      if (data.error) {
-        return 0;
-      } else {
-        return data.userVoteValue || 0;
-      }
-    } catch (error) {
-      return 0;
-    }
-  }
-
-  // Get the user vote value for a comment
-  async function getCommentUserVote(commentID, userID, questionID) {
-    try {
-      const response = await fetch('/comments/get/vote', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ commentID, userID, questionID }),
-      });
-  
-      const data = await response.json();
-  
-      if (data.error) {
-        return 0;
-      } else {
-        return data.voteValue || 0;
-      }
-    } catch (error) {
-      return 0;
-    }
-  }
-
-  function checkMaxVotes(clickCount, maxClicks) {
-    if (clickCount >= maxClicks) {
-      // User has reached the maximum allowed clicks
-      M.toast({ html: 'You have exceeded the vote limit.', classes: 'red' });
-      return true;
-    }
-  }
-
-  window.editComment = async function (index) {
-    const commentTextElement = document.querySelector(`#commentText_${index}`);
-    const editCommentInputElement = document.querySelector(`#editComment_${index}`);
-
-    commentTextElement.style.display = 'none'; // Hide comment text
-    editCommentInputElement.style.display = 'block'; // Show edit comment input
-
-    document.getElementById(`commentText_${index}`).style.display = 'none';
-    document.getElementById(`editComment_${index}`).style.display = 'inline-block';
-
-    document.getElementById("editCommentButton_" + index).style.display = 'none';
-    document.getElementById("saveCommentButton_" + index).style.display = 'inline-block'; 
-  }
-
-  window.saveEditedComment = async function (index, comment, commentID) {
-    // Update comment text and hide the input field
-    const editedComment = document.getElementById(`editComment_${index}`).value;
-    document.getElementById(`commentText_${index}`).innerHTML = editedComment;
-
-    document.getElementById(`commentText_${index}`).style.display = 'inline-block';
-    document.getElementById(`editComment_${index}`).style.display = 'none';
-
-    document.getElementById("editCommentButton_" + index).style.display = 'inline-block';
-    document.getElementById("saveCommentButton_" + index).style.display = 'none'; 
-    saveCommentToDB(editedComment, commentID)
-  }
-
-  // Save comment votes to database
-  async function saveCommentToDB (comment, commentID) {
-    const request = {
-      comment: comment,
-      questionID: questionID,
-      commentID: commentID,
-    }
-    console.log(request)
-    fetch("/comments/update/comment", {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(request),
-    })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      return response.json();
-    })
-    .catch(error => {
-      console.error('Error:', error.message);
-    });
-  }
 });
