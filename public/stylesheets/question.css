@@ -21,14 +21,8 @@
     margin-top: 20px;
 }
 
-.postMetadata {
-    margin-bottom: 20px;
-}
-
 .buttonContainer {
-
     align-items: center;
-
     margin-top: 20px;
 }
 
@@ -40,6 +34,11 @@
 
 .btn {
     margin-right: 10px;
+}
+
+textarea {
+  width: 100% !important;
+  min-height: 100px;
 }
 
 #answerForm {

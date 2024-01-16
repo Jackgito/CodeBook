@@ -35,7 +35,6 @@ const questionSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now(),
-    required: false,
   },
   voters: [{
     userID: String,
@@ -44,15 +43,12 @@ const questionSchema = new mongoose.Schema({
   views: {
     type: Number,
     default: 0,
-    required: false,
   },
   tags: {
     type: [String],
-    required: false,
   },
   author: {
     type: String,
-    required: false,
   },
   url: {
     type: String,
@@ -60,7 +56,6 @@ const questionSchema = new mongoose.Schema({
   },
   comments: {
     type: [commentSchema],
-    required: false,
   },
   totalVotes: {
     type: Number,

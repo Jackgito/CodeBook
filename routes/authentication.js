@@ -4,8 +4,6 @@ const passport = require('passport');
 const session = require('express-session');
 const flash = require('connect-flash');
 
-const { renderHomePage } = require('../functions/renderHomePage');
-
 const router = express.Router();
 
 const User = require('../models/User');
@@ -95,7 +93,7 @@ router.post('/login', (req, res, next) => {
         return next(err);
       }
       // Render the home page
-      renderHomePage(req, res, req.isAuthenticated());
+      res.redirect('/');
     });
   })(req, res, next);
 });
@@ -137,7 +135,7 @@ router.post('/signUp', async (req, res) => {
 
 // This is used in sign up page to check if username or email already exists in the database
 router.get('/check-unique', async (req, res) => {
-  const field = req.query.field; // 'username' or 'email'
+  const field = req.query.field;
   const value = req.query.value;
 
   try {
@@ -169,7 +167,7 @@ const ensureAuthenticated = (req, res, next) => {
     return next();
   }
   req.flash('error', "You must be logged in to post questions.");
-  res.render('login', { messages: req.flash() }); // Redirect to the login page if not authenticated
+  res.render('login', { messages: req.flash() });
 };
 
 module.exports = { router, ensureAuthenticated };

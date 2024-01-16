@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const questionID = document.getElementById("questionID").getAttribute('questionID');
   const likeButton = document.getElementById('likeButton')
   const dislikeButton = document.getElementById('dislikeButton')
+  const question = document.getElementById('question');
 
   let userAuthenticated = document.getElementById('isAuthenticated').getAttribute('isAuthenticated');
   
@@ -19,7 +20,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Set comment vote colors
     // Get the total number of comments
     const allComments = document.querySelectorAll('.comment').length;
-    console.log(allComments)
 
     // Iterate over each comment and apply setButtonColors
     for (let index = 0; index < allComments; index++) {
@@ -54,12 +54,23 @@ document.addEventListener('DOMContentLoaded', function() {
     let dislikeButton = document.querySelector(`.thumbsDown_-1`);
   
     let currentVote = await getQuestionUserVote(questionID, userID);
+    let updatedVote = getUpdatedVote(button, currentVote);
+    let totalVotes = parseInt(document.getElementById('votes').innerText);
+
+    setButtonColors(updatedVote, likeButton, dislikeButton);
+    updateQuestionVotesToDB(updatedVote, userID, questionID);
   
-    currentVote = getUpdatedVote(button, currentVote);
-    setButtonColors(currentVote, likeButton, dislikeButton);
-    updateQuestionVotesToDB(currentVote, userID, questionID);
-  
-    document.getElementById('votes').innerText = currentVote + ' votes';
+
+    // Update frontend totals
+    if (currentVote == 0) {
+      document.getElementById('votes').innerText = totalVotes + updatedVote + ' votes';
+    } else if (currentVote == -1) {
+      console.log("Minus")
+      document.getElementById('votes').innerText = totalVotes + 1 + updatedVote + ' votes';
+    } else {
+      console.log("-")
+      document.getElementById('votes').innerText = totalVotes - 1 - updatedVote + ' votes';
+    }
   };
   
   window.voteComment = async function (button) {
@@ -83,13 +94,22 @@ document.addEventListener('DOMContentLoaded', function() {
     let commentID = document.getElementById(`commentID_${commentIndex}`).getAttribute('commentID');
     
     let currentVote = await getCommentUserVote(commentID, userID, questionID);
+    let updatedVote = getUpdatedVote(button, currentVote)
+    let totalVotes = parseInt(document.getElementById(`voteCountComment_${commentIndex}`).innerText);
 
-    currentVote = getUpdatedVote(button, currentVote)
-    console.log(currentVote)
-    setButtonColors(currentVote, likeButton, dislikeButton);
-    updateCommentVotesToDB(currentVote, userID, questionID, commentID);
+    setButtonColors(updatedVote, likeButton, dislikeButton);
+    updateCommentVotesToDB(updatedVote, userID, questionID, commentID);
 
-    document.getElementById(`voteCountComment_${commentIndex}`).innerText = currentVote + ' votes';
+    // Update frontend totals
+    if (currentVote == 0) {
+      document.getElementById(`voteCountComment_${commentIndex}`).innerText = totalVotes + updatedVote + ' votes';
+    } else if (currentVote == -1) {
+      console.log("Minus")
+      document.getElementById(`voteCountComment_${commentIndex}`).innerText = totalVotes + 1 + updatedVote + ' votes';
+    } else {
+      console.log("-")
+      document.getElementById(`voteCountComment_${commentIndex}`).innerText = totalVotes - 1 - updatedVote + ' votes';
+    }
   };
   
   // Saves question votes to database
@@ -179,23 +199,30 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Question deletion
-    const deleteBtn = document.getElementById('deleteBtn');
+    // Question editing and deletion
+    if (userAuthenticated.username == question.author) {
+      const deleteBtn = document.getElementById('deleteBtn');
 
-    deleteBtn.addEventListener('click', () => {
-      if(confirm('Are you sure you want to delete this question?')) {
-        // User confirmed deletion, send delete request
-        fetch(`/questions/delete/${questionID}`, {
-          method: 'DELETE'
-        })
-        .then(response => {
-          window.location.href = '/'; 
-        })
-        .catch(err => {
-          console.error(err);
-        });      
-      }
-    });
+      deleteBtn.addEventListener('click', () => {
+        if(confirm('Are you sure you want to delete this question?')) {
+          // User confirmed deletion, send delete request
+          fetch(`/questions/delete/${questionID}`, {
+            method: 'DELETE'
+          })
+          .then(response => {
+            window.location.href = '/'; 
+          })
+          .catch(err => {
+            console.error(err);
+          });      
+        }
+      });
+
+      const editBtn = document.getElementById('editBtn');
+      editBtn.addEventListener('click', () => {
+        window.location.href = `/questions/edit/${questionID}`;
+      }); 
+    }
 
     // Comment deletion 
     // Select all elements with the class 'deleteBtnComment'
@@ -224,12 +251,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       });
     });
-
-    
-    const editBtn = document.getElementById('editBtn');
-    editBtn.addEventListener('click', () => {
-      window.location.href = `/questions/edit/${questionID}`;
-    }); 
   }
 
   // Get vote value for the comment or question when voting

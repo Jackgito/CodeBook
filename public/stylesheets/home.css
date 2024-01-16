@@ -11,20 +11,26 @@
 }
 
 #questionBtn {
-    margin: 20px;
+  display: flex;
+  justify-content: center;
+  max-width: 300px;
+  margin: 0 auto; 
+  margin-bottom: 20px;
+}
+
+#votesAndViews > .votes {
+  margin-right: 10px;
 }
 
 .pageContainer {
     margin: auto;
     margin-top: 20px;
     width: 80%;
+    max-width: 800px;
 }
 
 .card-content {
-    margin: 0px;
-    padding: 10px !important;
-}
-
-.row {
-    max-width: 1000px;
+  border: 1px solid #ccc;
+  padding-bottom: 0px !important;
+  padding-top: 10px !important;
 }

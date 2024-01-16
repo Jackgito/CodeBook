@@ -12,73 +12,51 @@
     <% } %>
 
     <div class="pageContainer">
-      <div class="row">
-        <div class="col s12">
-          <div class="center-align">
-          
-          <% if (isAuthenticated) { %>
-              <a href="questions/new/question" class="waves-effect waves-light btn" id="questionBtn">Ask Question</a>
-          <% } else { %>
-              <a href="login" class="waves-effect waves-light btn" id="questionBtn">Log in to ask question</a>
-          <% } %>
-          </div>
-          
-          <% questions.forEach(question => { %>
-            <div class="card">
-              <div class="card-content">
-                <div class="row">
+      <% if (isAuthenticated) { %>
+          <a href="questions/new/question" class="waves-effect waves-light btn" id="questionBtn">Ask Question</a>
+      <% } else { %>
+          <a href="login" class="waves-effect waves-light btn" id="questionBtn">Log in to ask a question</a>
+      <% } %>
 
-                  <!-- Left Column -->
-                  <div class="col s1" style="width: 10%;">
-                    <span class="card-title">
-                      
-                      <p class="votes" id="votes">
-                        <% if (question.totalVotes >= 1000) { %>
-                          <%= (question.totalVotes / 1000).toFixed(1) %>k votes
-                        <% } else { %>
-                          <%= question.totalVotes %> votes
-                        <% } %>
-                      </p>
-                      
-                      <p class="views" id="views">
-                        <% if (question.views >= 1000) { %>
-                          <%= (question.views / 1000).toFixed(1) %>k views
-                        <% } else { %>
-                          <%= question.views %> views
-                        <% } %>
-                      </p>
-                      
-                    </span>
-                  </div>
-                              
-                  <!-- Middle Column -->
-                  <div class="col s7" style="width: 60%;">
-                    <span class="card-title">
-                      <!-- Create a link with data attributes -->
-                      <a href="/questions/<%= question.url %>" class="title" id="title"><%= question.title %></a>
-                      
-                      <!-- Shorten long questions -->
-                      <p class="question" id="question">
-                        <%= question.question.length > 100 ? question.question.slice(0, 100) + '...' : question.question %>
-                      </p>
-                    </span>
-                  </div>
+        <% questions.forEach(question => { %>
+          <div class="card">
+            <div class="card-content">
+              
+              <!-- Left Column -->
+                <span class="card-title">
+                  <p id="votesAndViews">
+                    <% if (question.totalVotes >= 1000) { %>
+                      <span class="votes"><%= (question.totalVotes / 1000).toFixed(1) %>k votes</span>
+                    <% } else { %>
+                      <span class="votes"><%= question.totalVotes %> votes</span>
+                    <% } %>
+                  
+                    <% if (question.views >= 1000) { %>
+                      <span class="views"><%= (question.views / 1000).toFixed(1) %>k views</span>
+                    <% } else { %>
+                      <span class="views"><%= question.views %> views</span>
+                    <% } %>
+                  </p>
+                </span>
+                          
+              <!-- Middle Column -->
+                <span class="card-title">
+                  <!-- Create a link with data attributes -->
+                  <a href="/questions/<%= question.url %>" class="title" id="title"><%= question.title %></a>
+                </span>
 
-                  <!-- Right Column -->
-                  <div class="col s4" style="width: 30%;">
-                    <span class="card-title">
-                      <p class="right-align" id="author"><%= question.author %> asked at <%= question.createdAt.toLocaleDateString() %></p>
-                      <p class="tags" id="tags"><%= question.tags %></p>
-                    </span>
-                  </div>
-                </div>
-              </div>
+
+              <!-- Right Column -->
+                <span class="card-title">
+                  <p id="author"><%= question.author %> asked at <%= question.createdAt.toLocaleDateString() %></p>
+                  <p class="tags" id="tags"><%= question.tags %></p>
+                </span>
+
             </div>
-          <% }) %>
-        </div>
-      </div>
+          </div>
+        <% }) %>
+
     </div>
-    <%- include("./partials/footer") %>
 
     <script type="text/javascript" src="/javascripts/home.js"></script>
 

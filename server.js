@@ -3,13 +3,11 @@ const mongoose = require("mongoose"); // For database management
 const passport = require("passport"); // For authentication
 const path = require("path");
 
-const { renderHomePage } = require('./functions/renderHomePage');
-
-
 const initializePassport = require('./passport-config')
 
 // Import models
 const User = require('./models/User');
+const Question = require('./models/Question');
 
 const app = express();
 const PORT = 3000;
@@ -20,15 +18,16 @@ app.set('views', path.join(__dirname, 'views'));
 
 // Routes
 const { router: authenticationRouter} = require('./routes/authentication');
-
+const commentsRouter = require('./routes/comments');
 const questionsRouter = require('./routes/questions');
-const commentsAndVotesRouter = require('./routes/commentsAndVotes');
+const profileRouter = require('./routes/profile');
 
 app.use(express.urlencoded({ extended: false }));
 
 app.use('/', authenticationRouter);
 app.use('/', questionsRouter);
-app.use('/', commentsAndVotesRouter);
+app.use('/', commentsRouter);
+app.use('/', profileRouter);
 
 const uri = "mongodb+srv://Codebook:D7SeTmolljnr4wKb@codebookcluster.6fowij0.mongodb.net/?retryWrites=true&w=majority"
 
@@ -51,16 +50,6 @@ app.use(passport.session());
 // Passport for authentication
 initializePassport(
   passport,
-  async email => {
-    try {
-      // Find user by email in the database
-      const user = await User.findOne({ email });
-      return user;
-    } catch (error) {
-      console.error('Error finding user by email:', error);
-      return null;
-    }
-  },
   async id => {
     try {
       // Find user by ID in the database
@@ -77,9 +66,16 @@ initializePassport(
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: false }));
 
-// Open home page
+// Render home page
 app.get('/', async (req, res) => {
-  renderHomePage(req, res);
+  try {
+    const questions = await Question.find().sort({ createdAt: 'desc' });
+    const isAuthenticated = req.isAuthenticated()
+    res.render('home', { questions, isAuthenticated});
+    } catch (error) {
+    console.error('Error rendering home page:', error);
+    res.status(500).send('Internal Server Error');
+  }
 });
 
 app.listen(PORT, () => {

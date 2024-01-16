@@ -1,0 +1,13 @@
+h1 {
+  color: #333;
+}
+
+.profile-info {
+  border: 1px solid #ccc;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.profile-info p {
+  margin: 5px 0;
+}
