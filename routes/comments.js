@@ -116,4 +116,27 @@ router.delete('/comments/delete/:questionID/:commentID', async (req, res) => {
   }
 });
 
+// Handle comment update
+router.post('/comments/update/comment', async (req, res) => {
+  try {
+    const { comment, questionID, commentID } = req.body;
+
+    // Find the question by ID
+    const question = await Question.findById(questionID);
+
+    // Find the index of the comment in the comments array
+    const commentIndex = question.comments.findIndex(c => c._id.toString() === commentID);
+
+    // Update the specific comment
+    question.comments[commentIndex].comment = comment;
+
+    // Save the updated question to the database
+    const updatedQuestion = await question.save();
+
+    res.json({ success: true, updatedQuestion });
+  } catch (error) {
+    console.error('Error:', error.message);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+});
 module.exports = router;

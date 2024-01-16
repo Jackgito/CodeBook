@@ -84,7 +84,6 @@ router.post('/questions/get/vote', async (req, res) => {
   try {
     const question = await Question.findOne({ _id: questionID });
     const vote = question.voters.find(v => v.userID === userID);
-    console.log(vote)
 
     if (vote) {
       res.status(200).json({ userVoteValue: vote.userVoteValue });
@@ -157,7 +156,7 @@ router.delete('/questions/delete/:questionID', async (req, res) => {
     });
 });
 
-// Edit question
+// Get edit question page
 router.get('/questions/edit/:questionID', ensureAuthenticated, async (req, res) => {
   const question = await Question.findById(req.params.questionID);
   if (!question) {
@@ -170,6 +169,26 @@ router.get('/questions/edit/:questionID', ensureAuthenticated, async (req, res) 
     },
     question: question
   });
+});
+
+// Edit question
+router.put('/questions/edit/:questionID', async (req, res) => {
+  const updatedQuestion = req.body;
+
+  try {
+    // Find and update the question in the database
+    const result = await Question.findByIdAndUpdate(updatedQuestion.questionID, updatedQuestion, { new: true });
+
+    if (result) {
+      // Respond with the updated question's URL
+      res.status(200).json({ success: true, message: 'Question updated successfully', updatedQuestionUrl: result.url });
+    } else {
+      res.status(404).json({ success: false, message: 'Question not found' });
+    }
+  } catch (error) {
+    console.error('Error updating question:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
 });
 
 async function fetchQuestion(title) {

@@ -7,12 +7,11 @@ document.addEventListener('DOMContentLoaded', function () {
         // Get the values entered in the title and question input fields
         const title = document.getElementById('questionTitle').value;
         const question = document.getElementById('question').value;
-        const author = document.getElementById('username').innerText
     
         // Check if title and question exist
         if (title.trim() === '' || question.trim() === '') {
           console.error('Title and question are required!');
-          return; // Don't proceed with form submission if title or question is empty
+          return;
         }
     
         // Encode the title using encodeURIComponent

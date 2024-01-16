@@ -50,7 +50,6 @@
                   <% } else { %>
                     <%= question.totalVotes %> votes
                   <% } %>
-
                 </p>
 
                 <a class="btn-floating waves-effect waves-light thumbsUp_-1" id="likeButton"><i class="material-icons thumbsUp" onclick="voteQuestion(this)">thumb_up</i></a>
@@ -70,7 +69,8 @@
             <% question.comments.forEach((comment, index) => { %>
               <div class="comment card">
                 <div class="card-content">
-                  <p><%= comment.comment %></p>
+                    <p id="commentText_<%= index %>"><%= comment.comment %></p>
+                    <input type="text" id="editComment_<%= index %>" style="display: none;" value="<%= comment.comment %>">
                   <div id="commentID_<%= index %>" commentID="<%= comment._id %>"></div>
                   <div class="buttonContainer">
                     <p>Answered <%= timeSince(comment.createdAt) %> by <%= comment.author %></p>
@@ -85,9 +85,10 @@
                     
                     <a class="btn-floating waves-effect waves-light thumbsUp thumbsUp_<%= index %>" data-comment-index="<%= index %>" onclick="voteComment(this)"><i class="material-icons">thumb_up</i></a>
                     <a class="btn-floating waves-effect waves-light thumbsDown thumbsDown_<%= index %>" data-comment-index="<%= index %>" onclick="voteComment(this)"><i class="material-icons">thumb_down</i></a>
-                    
+
                     <% if (isAuthenticated.username == comment.author) { %>
-                      <button class="waves-effect waves-light btn editBtnComment" data-comment-index="<%= index %>">Edit</button>
+                      <button id="editCommentButton_<%= index %>" class="waves-effect waves-light btn editBtnComment" data-comment-index="<%= index %>" onclick="editComment('<%= index %>')">Edit</button>
+                      <button id="saveCommentButton_<%= index %>" class="waves-effect waves-light btn saveBtnComment" data-comment-index="<%= index %>" onclick="saveEditedComment('<%= index %>', '<%= comment.comment %>', '<%= comment._id %>')" style="display: none;">Save</button>
                       <button class="waves-effect waves-light btn deleteBtnComment" data-comment-index="<%= index %>" data-comment-id="<%= comment._id %>">Delete</button>
                     <% } %>
                   </div>
@@ -95,7 +96,7 @@
               </div>
             <% }); %>
           <% } %>
-          
+
           <!-- Comment field for authenticated users -->
           <% if (isAuthenticated.value) { %>
             <form action="/questions/add/comment" method="POST" id="commentForm">

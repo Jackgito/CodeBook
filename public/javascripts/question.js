@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', function() {
   const question = document.getElementById('question');
 
   let userAuthenticated = document.getElementById('isAuthenticated').getAttribute('isAuthenticated');
-  
   let maxClicks = 10;
   let clickCount = 0;
 
@@ -29,7 +28,6 @@ document.addEventListener('DOMContentLoaded', function() {
       let commentID = document.getElementById(`commentID_${index}`).getAttribute('commentID');
 
       currentVote = await getCommentUserVote(commentID, userID, questionID);
-      console.log(currentVote, likeButton, dislikeButton);
       
       // Call the setButtonColors function for the current comment
       setButtonColors(currentVote, likeButton, dislikeButton);
@@ -65,10 +63,8 @@ document.addEventListener('DOMContentLoaded', function() {
     if (currentVote == 0) {
       document.getElementById('votes').innerText = totalVotes + updatedVote + ' votes';
     } else if (currentVote == -1) {
-      console.log("Minus")
       document.getElementById('votes').innerText = totalVotes + 1 + updatedVote + ' votes';
     } else {
-      console.log("-")
       document.getElementById('votes').innerText = totalVotes - 1 - updatedVote + ' votes';
     }
   };
@@ -104,10 +100,8 @@ document.addEventListener('DOMContentLoaded', function() {
     if (currentVote == 0) {
       document.getElementById(`voteCountComment_${commentIndex}`).innerText = totalVotes + updatedVote + ' votes';
     } else if (currentVote == -1) {
-      console.log("Minus")
       document.getElementById(`voteCountComment_${commentIndex}`).innerText = totalVotes + 1 + updatedVote + ' votes';
     } else {
-      console.log("-")
       document.getElementById(`voteCountComment_${commentIndex}`).innerText = totalVotes - 1 - updatedVote + ' votes';
     }
   };
@@ -166,7 +160,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Functionality for authenticated users (edit, delete)
   if (userAuthenticated == "true") {
     document.getElementById("commentForm").addEventListener("submit", function (event) {
-      event.preventDefault(); // Prevent the default form submission
+      event.preventDefault();
     
       // Get values from HTML elements
       const commentValue = document.getElementById("comment").value;
@@ -299,7 +293,7 @@ document.addEventListener('DOMContentLoaded', function() {
   };
 
 
-  // Function to get the user vote value for a question
+  // Get the user vote value for a question
   async function getQuestionUserVote(questionID, userID) {
     try {
       const response = await fetch('/questions/get/vote', {
@@ -313,18 +307,16 @@ document.addEventListener('DOMContentLoaded', function() {
       const data = await response.json();
   
       if (data.error) {
-        console.error('Error:', data.error);
         return 0;
       } else {
         return data.userVoteValue || 0;
       }
     } catch (error) {
-      console.error('Error:', error);
       return 0;
     }
   }
 
-  // Function to get the user vote value for a comment
+  // Get the user vote value for a comment
   async function getCommentUserVote(commentID, userID, questionID) {
     try {
       const response = await fetch('/comments/get/vote', {
@@ -338,14 +330,11 @@ document.addEventListener('DOMContentLoaded', function() {
       const data = await response.json();
   
       if (data.error) {
-        console.error('Error:', data.error);
         return 0;
       } else {
-        console.log('User vote value:', data.voteValue);
         return data.voteValue || 0;
       }
     } catch (error) {
-      console.error('Error:', error);
       return 0;
     }
   }
@@ -356,5 +345,58 @@ document.addEventListener('DOMContentLoaded', function() {
       M.toast({ html: 'You have exceeded the vote limit.', classes: 'red' });
       return true;
     }
+  }
+
+  window.editComment = async function (index) {
+    const commentTextElement = document.querySelector(`#commentText_${index}`);
+    const editCommentInputElement = document.querySelector(`#editComment_${index}`);
+
+    commentTextElement.style.display = 'none'; // Hide comment text
+    editCommentInputElement.style.display = 'block'; // Show edit comment input
+
+    document.getElementById(`commentText_${index}`).style.display = 'none';
+    document.getElementById(`editComment_${index}`).style.display = 'inline-block';
+
+    document.getElementById("editCommentButton_" + index).style.display = 'none';
+    document.getElementById("saveCommentButton_" + index).style.display = 'inline-block'; 
+  }
+
+  window.saveEditedComment = async function (index, comment, commentID) {
+    // Update comment text and hide the input field
+    const editedComment = document.getElementById(`editComment_${index}`).value;
+    document.getElementById(`commentText_${index}`).innerHTML = editedComment;
+
+    document.getElementById(`commentText_${index}`).style.display = 'inline-block';
+    document.getElementById(`editComment_${index}`).style.display = 'none';
+
+    document.getElementById("editCommentButton_" + index).style.display = 'inline-block';
+    document.getElementById("saveCommentButton_" + index).style.display = 'none'; 
+    saveCommentToDB(editedComment, commentID)
+  }
+
+  // Save comment votes to database
+  async function saveCommentToDB (comment, commentID) {
+    const request = {
+      comment: comment,
+      questionID: questionID,
+      commentID: commentID,
+    }
+    console.log(request)
+    fetch("/comments/update/comment", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(request),
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .catch(error => {
+      console.error('Error:', error.message);
+    });
   }
 });

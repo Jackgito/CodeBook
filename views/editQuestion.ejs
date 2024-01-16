@@ -12,10 +12,9 @@
       
     <div class="pageContainer">
       <h4>Edit question</h4>
-
-      <form id="questionForm" method="POST">
-        <input type="hidden" id="username" name="username" value="<%= isAuthenticated.user %>">
-
+    
+      <form id="questionForm" action="/questions/edit/<%= question.url %>" onsubmit="submitForm(event)" method="POST">
+    
         <div class="input-field">
           <label for="questionTitle">Title:</label>
           <input id="questionTitle" name="questionTitle" type="text" value="<%= question.title %>" required>
@@ -26,10 +25,9 @@
         </div>
         
         <input id="questionID" type="hidden" name="questionID" value="<%= question._id %>">
-
+    
         <button type="submit" class="btn">Submit</button>
       </form>
-
     </div>
     <script src="/javascripts/editQuestion.js"></script>
   </body>

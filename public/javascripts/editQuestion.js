@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const questionIDInput = document.getElementById('questionID');
   const questionID = questionIDInput.value;
   const questionURL = document.getElementById('questionURL').value;
-  console.log(questionURL)
     
   questionForm.addEventListener('submit', (event) => {
     event.preventDefault();
@@ -12,7 +11,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const formData = new FormData(questionForm);
     const updatedQuestion = {
       title: formData.get('questionTitle'),
-      content: formData.get('question'),
+      question: formData.get('question'),
+      questionID: questionID,
+      url: encodeURIComponent(formData.get('questionTitle')),
     };
     
     // Update the question
@@ -27,12 +28,17 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!response.ok) {
         throw new Error(`Failed to update question: ${response.status}`);
       }
+      return response.json(); // Parse the JSON response
+    })
+    .then(data => {
       // Redirect to the updated question page or handle the response as needed
-      window.location.href = `/questions/${questionURL}`;
+      window.location.href = `/questions/${data.updatedQuestionUrl}`;
     })
     .catch(error => {
       console.error('Error updating question:', error);
     });
+
+
   });
 });
   
