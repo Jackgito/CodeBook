@@ -2,15 +2,15 @@ const express = require("express");   // For server communication
 const mongoose = require("mongoose"); // For database management
 const passport = require("passport"); // For authentication
 const path = require("path");
-
 const initializePassport = require('./passport-config')
+require('dotenv').config();
 
 // Import models
 const User = require('./models/User');
 const Question = require('./models/Question');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // Use EJS as view engine
 app.set("view engine", "ejs");
@@ -96,7 +96,6 @@ app.get('/', async (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 });
-
 
 app.listen(PORT, () => {
   console.log("Server is running on port " + PORT);
