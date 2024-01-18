@@ -67,16 +67,36 @@ app.use(express.static("public"));
 app.use(express.urlencoded({ extended: false }));
 
 // Render home page
+const PAGE_SIZE = 10; // Number of questions per page
+
 app.get('/', async (req, res) => {
   try {
-    const questions = await Question.find().sort({ createdAt: 'desc' });
-    const isAuthenticated = req.isAuthenticated()
-    res.render('home', { questions, isAuthenticated});
-    } catch (error) {
+    const page = parseInt(req.query.page) || 1;
+    const startIndex = (page - 1) * PAGE_SIZE;
+
+    // Fetch total number of questions without skip and limit
+    const totalQuestionsCount = await Question.countDocuments();
+
+    const questions = await Question.find()
+      .sort({ createdAt: 'desc' })
+      .skip(startIndex)
+      .limit(PAGE_SIZE);
+
+    const isAuthenticated = req.isAuthenticated();
+    const totalPages = Math.ceil(totalQuestionsCount / PAGE_SIZE);
+
+    res.render('home', {
+      questions,
+      isAuthenticated,
+      currentPage: page,
+      totalPages: totalPages
+    });
+  } catch (error) {
     console.error('Error rendering home page:', error);
     res.status(500).send('Internal Server Error');
   }
 });
+
 
 app.listen(PORT, () => {
   console.log("Server is running on port " + PORT);

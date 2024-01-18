@@ -1,10 +1,8 @@
-<!-- index.ejs -->
 <!DOCTYPE html>
 <html lang="en">
   <%- include("./partials/head", { title: "Home page", stylesheet: "stylesheets/home.css" }) %>
-
+  
   <body>
-
     <% if (typeof isAuthenticated === 'boolean' && isAuthenticated) { %>
       <%- include('./partials/navbarLoggedIn') %>
     <% } else { %>
@@ -13,52 +11,66 @@
 
     <div class="pageContainer">
       <% if (isAuthenticated) { %>
-          <a href="questions/new/question" class="waves-effect waves-light btn" id="questionBtn">Ask Question</a>
+        <button id="questionBtn" class="btn" onclick="redirectTo('questions/new/question')">Ask Question</button>
       <% } else { %>
-          <a href="login" class="waves-effect waves-light btn" id="questionBtn">Log in to ask a question</a>
+        <button id="questionBtn" class="btn" onclick="redirectTo('login')">Log in to ask a question</button>
       <% } %>
 
         <% questions.forEach(question => { %>
           <div class="card">
             <div class="card-content">
               
-              <!-- Left Column -->
-                <span class="card-title">
-                  <p id="votesAndViews">
-                    <% if (question.totalVotes >= 1000) { %>
-                      <span class="votes"><%= (question.totalVotes / 1000).toFixed(1) %>k votes</span>
-                    <% } else { %>
-                      <span class="votes"><%= question.totalVotes %> votes</span>
-                    <% } %>
-                  
-                    <% if (question.views >= 1000) { %>
-                      <span class="views"><%= (question.views / 1000).toFixed(1) %>k views</span>
-                    <% } else { %>
-                      <span class="views"><%= question.views %> views</span>
-                    <% } %>
-                  </p>
-                </span>
-                          
-              <!-- Middle Column -->
-                <span class="card-title">
-                  <!-- Create a link with data attributes -->
-                  <a href="/questions/<%= question.url %>" class="title" id="title"><%= question.title %></a>
-                </span>
+            <!-- Left Column -->
+              <span class="card-title">
+                <p id="votesAndViews">
+                  <% if (question.totalVotes >= 1000) { %>
+                    <span class="votes"><%= (question.totalVotes / 1000).toFixed(1) %>k votes</span>
+                  <% } else { %>
+                    <span class="votes"><%= question.totalVotes %> votes</span>
+                  <% } %>
+                
+                  <% if (question.views >= 1000) { %>
+                    <span class="views"><%= (question.views / 1000).toFixed(1) %>k views</span>
+                  <% } else { %>
+                    <span class="views"><%= question.views %> views</span>
+                  <% } %>
+                </p>
+              </span>
+                        
+            <!-- Middle Column -->
+              <span class="card-title">
+                <!-- Create a link with data attributes -->
+                <a href="/questions/<%= question.url %>" id="title"><%= question.title %></a>
+              </span>
 
-
-              <!-- Right Column -->
-                <span class="card-title">
-                  <p id="author"><%= question.author %> asked at <%= question.createdAt.toLocaleDateString() %></p>
-                  <p class="tags" id="tags"><%= question.tags %></p>
-                </span>
+            <!-- Right Column -->
+              <span class="card-title">
+                <p id="author"><%= question.author %> asked at <%= question.createdAt.toLocaleDateString() %></p>
+                <p class="tags" id="tags"><%= question.tags %></p>
+              </span>
 
             </div>
           </div>
         <% }) %>
 
+      <!-- Pager -->
+      <div class="pagination">
+        <% for (let i = 1; i <= totalPages; i++) { %>
+          <a href="/?page=<%= i %>" class="<%= currentPage === i ? 'active' : '' %>">
+            <%= i %>
+          </a>
+        <% } %>
+      </div>
+
     </div>
+    <%- include("./partials/footer") %>
 
-    <script type="text/javascript" src="/javascripts/home.js"></script>
+    <script>
+      function redirectTo(url) {
+        window.location.href = url;
+      }
+    </script>
 
+    <script type="module" src="/javascripts/home.js"></script>
   </body>
 </html>

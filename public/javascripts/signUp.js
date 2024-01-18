@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
+
   const usernameInput = document.getElementById('username');
   const emailInput = document.getElementById('email');
   const passwordInput = document.getElementById('password');
@@ -136,7 +137,7 @@ document.addEventListener('DOMContentLoaded', function () {
     } else {
       // Show error 
       confirmPasswordError.hidden = false;
-      confirmPasswordError.textContent = 'Passwords do not match';
+      confirmPasswordError.textContent = 'Passwords do not match.';
       confirmPasswordInput.classList.add('invalid');
     }
   }

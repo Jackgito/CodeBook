@@ -1,0 +1,82 @@
+:root {
+  --primary-color: #2a2a2a;
+  --secondary-color: #222222;
+  --accent-color: #5daed3;
+  --accent-color-light: #6ecaf5;
+  --accent-color-dark: #4e87a1;
+  --font-color: white;
+}
+
+* {
+  color: var(--font-color);
+}
+
+/* Background */
+body {
+  background-color: var(--primary-color) !important;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Navbar */
+nav {
+  background-color: var(--secondary-color) !important;
+}
+
+/* Footer */
+footer {
+  background-color: var(--secondary-color) !important;
+}
+
+/* Buttons */
+.btn,
+.btn-floating,
+.btn-large,
+.btn-small {
+  background-color: var(--accent-color) !important;
+  color: var(--font-color) !important;
+  border-radius: 8px !important;
+  transition: background-color 0.4s ease !important;
+  font-weight: bold;
+}
+
+.btn:hover,
+.btn-floating:hover,
+.btn-large:hover,
+.btn-small:hover {
+  background-color: var(--accent-color-dark) !important;
+}
+
+.card-content {
+  border: 1px solid #ccc;
+  padding-bottom: 0px !important;
+  padding-top: 5px !important;
+  padding-left: 10px !important;
+  background-color: var(--secondary-color);
+}
+
+#title {
+  font-size: 1.4rem;
+  color: var(--accent-color-light) !important;
+}
+
+#authorizationContainer * {
+  color: white;
+}
+
+/* Common styles for input fields on focus */
+.input-field input:focus + label {
+  color: var(--accent-color-light) !important;
+}
+
+.input-field input:focus {
+  border-bottom: 1px solid var(--accent-color-light) !important;
+  box-shadow: 0 1px 0 0 var(--accent-color-light) !important;
+}
+
+.input-field .prefix.active {
+  color: var(--accent-color-light) !important;
+}
+
+.input-field label {
+  color: #c7c7c7 !important;
+}

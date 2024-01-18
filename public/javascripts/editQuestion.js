@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+
   const questionForm = document.getElementById('questionForm');
   const questionIDInput = document.getElementById('questionID');
   const questionID = questionIDInput.value;

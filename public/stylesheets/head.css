@@ -18,4 +18,8 @@ body {
     right: auto !important;
     bottom: 5%;
 
-  }
+}
+
+* {
+  color: var(--font-color);
+}

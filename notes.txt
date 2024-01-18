@@ -1,16 +1,11 @@
-Questions:
-Best way to pass data from route/server to the JS file
-
 TODO:
 Fix delay in voting
-Handle questions with same titles
+Fix autocomplete style
+Fix color flicker when refreshed
 
-
-Test user:
-jack@mail.com
-password1
-
+// MongoDB
 Codebook
 D7SeTmolljnr4wKb
 
+// Task
 //https://docs.google.com/document/d/1zSfVZcnv7FUnu6VxwKLXBPZHqTIdRX1w3d9Yer_mKVU/edit#heading=h.z9sfsn1d1vz6

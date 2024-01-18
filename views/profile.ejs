@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <%- include("./partials/head", { title: "Profile", stylesheet: "stylesheets/profile.css" }) %>
+  <head>
+    <%- include("./partials/head", { title: "Profile", stylesheet: "stylesheets/profile.css" }) %>
 
-</head>
-<body>
-    <%- include('./partials/navbarLoggedIn') %>
-  <h1><%= user.username %>'s Profile</h1>
+  </head>
+  <body>
+      <%- include('./partials/navbarLoggedIn') %>
+    <h1><%= user.username %>'s Profile</h1>
 
-  <div class="profile-info">
-    <p><strong>Email:</strong> <%= user.email %></p>
-  </div>
+    <div class="profile-info">
+      <p><strong>Email:</strong> <%= user.email %></p>
+    </div>
 
-</body>
+  </body>
+  <%- include("./partials/footer") %>
 </html>

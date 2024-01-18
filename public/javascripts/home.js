@@ -1,4 +1,3 @@
-// This is called when a question link is clicked
 function loadQuestion(url) {
   try {
     fetch(url)

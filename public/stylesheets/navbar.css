@@ -8,9 +8,18 @@
 }
 
 .sidenav {
+  background-color: var(--secondary-color);
   width: 180px;
   i {
     margin: 0 !important;
     margin-right: 10px !important;
   }
+}
+
+.sidenav a i.material-icons {
+  color: var(--font-color) !important;
+}
+
+a {
+  color: var(--font-color) !important;
 }

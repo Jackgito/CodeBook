@@ -1,0 +1,20 @@
+.footer {
+  background-color: var(--secondary-color);
+  margin-top: 50px;
+  padding: 10px;
+  text-align: center;
+}
+
+/* Color for the switch lever */
+.switch label input[type=checkbox]:checked+.lever:after {
+  background-color: var(--accent-color-dark) !important;
+}
+
+/* Color for the switch background when it's on */
+.switch input[type="checkbox"]:checked + .lever {
+  background-color: var(--accent-color-light) !important;
+}
+
+.switch label {
+  color: white;
+}

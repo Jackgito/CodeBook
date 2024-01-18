@@ -3,38 +3,34 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<%- include("./partials/head", { title: "Log in", stylesheet: "/stylesheets/question.css" }) %>
+  <%- include("./partials/head", { title: "Log in", stylesheet: "/stylesheets/question.css" }) %>
 
-<body>
-  <!-- These values are used in the JS file -->
-  <div id="Question" Question="<%= question %>"></div>
+  <body>
+    <!-- These values are used in the JS file -->
+    <div id="Question" Question="<%= question %>"></div>
 
-  <div id="isAuthenticated" isAuthenticated="<%= isAuthenticated?.value %>"></div>
-  <div id="username" username="<%= isAuthenticated?.username %>"></div>
-  <div id="questionID" questionID="<%= question.id %>"></div>
-  <div id="question" question="<%= question %>"></div>
-  <div id="userID" userID="<%= isAuthenticated.userID %>"></div>
+    <div id="isAuthenticated" isAuthenticated="<%= isAuthenticated?.value %>"></div>
+    <div id="username" username="<%= isAuthenticated?.username %>"></div>
+    <div id="questionID" questionID="<%= question.id %>"></div>
+    <div id="question" question="<%= question %>"></div>
+    <div id="userID" userID="<%= isAuthenticated.userID %>"></div>
 
-  <% if (isAuthenticated && isAuthenticated.value) { %>
-    <%- include('./partials/navbarLoggedIn') %>
-  <% } else { %>
-    <%- include('./partials/navbarGuest') %>
-  <% } %>
+    <% if (isAuthenticated && isAuthenticated.value) { %>
+      <%- include('./partials/navbarLoggedIn') %>
+    <% } else { %>
+      <%- include('./partials/navbarGuest') %>
+    <% } %>
 
-  <div class="pageContainer">
-    <div class="row">
-      <div class="col s12">
-
-        <!-- Question -->
-        <% if (question) { %>
-          <div class="card">
-            <div class="card-content">
-              <span class="card-title"><%= question.title %></span>
-              <p>Asked <%= timeSincePost %> by <%= question.author %></p>
-
-              <p><%= question.question %></p>
-
-              <div class="buttonContainer">
+    <div class="pageContainer">
+          <!-- Question -->
+          <% if (question) { %>
+            <div class="card">
+              <div class="card-content">
+                <span class="card-title"><%= question.title %></span>
+                <p>Asked <%= timeSincePost %> by <%= question.author %></p>
+                <br>
+                <p><%= question.question %></p>
+                <br>
 
                 <p class="views">
                   <% if (question.views >= 1000) { %>
@@ -51,92 +47,93 @@
                     <%= question.totalVotes %> votes
                   <% } %>
                 </p>
-
-                <a class="btn-floating waves-effect waves-light thumbsUp_-1" id="likeButton"><i class="material-icons thumbsUp" onclick="voteQuestion(this)">thumb_up</i></a>
-                <a class="btn-floating waves-effect waves-light thumbsDown_-1" id="dislikeButton"><i class="material-icons thumbsDown" onclick="voteQuestion(this)">thumb_down</i></a>
                 
-                <% if (isAuthenticated.username == question.author) { %>
-                  <button id="editBtn" class="waves-effect waves-light btn">Edit</button>
-                  <button id="deleteBtn" class="waves-effect waves-light btn">Delete</button>
-                <% } %>
+                <div class="buttonContainer right-align">
+                  <a class="btn-floating waves-effect waves-light thumbsUp_-1" id="likeButton"><i class="material-icons thumbsUp" onclick="voteQuestion(this)">thumb_up</i></a>
+                  <a class="btn-floating waves-effect waves-light thumbsDown_-1" id="dislikeButton"><i class="material-icons thumbsDown" onclick="voteQuestion(this)">thumb_down</i></a>
+                  
+                  <% if (isAuthenticated.username == question.author) { %>
+                    <button id="editBtn" class="waves-effect waves-light btn">Edit</button>
+                    <button id="deleteBtn" class="waves-effect waves-light btn">Delete</button>
+                  <% } %>
+                </div>
+
               </div>
             </div>
-          </div>
 
-          <!-- Comments -->
-          <% if (question.comments.length > 0) { %>
-            <h4>Comments</h4>
-            <% question.comments.forEach((comment, index) => { %>
-              <div class="comment card">
-                <div class="card-content">
-                    <p id="commentText_<%= index %>"><%= comment.comment %></p>
-                    <input type="text" id="editComment_<%= index %>" style="display: none;" value="<%= comment.comment %>">
-                  <div id="commentID_<%= index %>" commentID="<%= comment._id %>"></div>
-                  <div class="buttonContainer">
-                    <p>Answered <%= timeSince(comment.createdAt) %> by <%= comment.author %></p>
+            <!-- Comments -->
+            <% if (question.comments.length > 0) { %>
+              <h4>Comments</h4>
+              <% question.comments.forEach((comment, index) => { %>
+                <div class="comment card">
+                  <div class="card-content">
+                      <p id="commentText_<%= index %>"><%= comment.comment %></p>
+                      <input type="text" id="editComment_<%= index %>" style="display: none;" value="<%= comment.comment %>">
+                    <div id="commentID_<%= index %>" commentID="<%= comment._id %>"></div>
+                    <br>
+                    <div class="buttonContainer">
+                      <p>Answered <%= timeSince(comment.createdAt) %> by <%= comment.author %></p>
+                        
+                      <p class="votes" id="voteCountComment_<%= index %>">
+                        <% if (comment.totalVotes >= 1000) { %>
+                          <%= (comment.totalVotes / 1000).toFixed(1) %>k votes
+                        <% } else { %>
+                          <%= comment.totalVotes %> votes
+                        <% } %>
+                      </p>
                       
-                    <p class="votes" id="voteCountComment_<%= index %>">
-                      <% if (comment.totalVotes >= 1000) { %>
-                        <%= (comment.totalVotes / 1000).toFixed(1) %>k votes
-                      <% } else { %>
-                        <%= comment.totalVotes %> votes
-                      <% } %>
-                    </p>
-                    
-                    <a class="btn-floating waves-effect waves-light thumbsUp thumbsUp_<%= index %>" data-comment-index="<%= index %>" onclick="voteComment(this)"><i class="material-icons">thumb_up</i></a>
-                    <a class="btn-floating waves-effect waves-light thumbsDown thumbsDown_<%= index %>" data-comment-index="<%= index %>" onclick="voteComment(this)"><i class="material-icons">thumb_down</i></a>
+                      <a class="btn-floating waves-effect waves-light thumbsUp thumbsUp_<%= index %>" data-comment-index="<%= index %>" onclick="voteComment(this)"><i class="material-icons">thumb_up</i></a>
+                      <a class="btn-floating waves-effect waves-light thumbsDown thumbsDown_<%= index %>" data-comment-index="<%= index %>" onclick="voteComment(this)"><i class="material-icons">thumb_down</i></a>
 
-                    <% if (isAuthenticated.username == comment.author) { %>
-                      <button id="editCommentButton_<%= index %>" class="waves-effect waves-light btn editBtnComment" data-comment-index="<%= index %>" onclick="editComment('<%= index %>')">Edit</button>
-                      <button id="saveCommentButton_<%= index %>" class="waves-effect waves-light btn saveBtnComment" data-comment-index="<%= index %>" onclick="saveEditedComment('<%= index %>', '<%= comment.comment %>', '<%= comment._id %>')" style="display: none;">Save</button>
-                      <button class="waves-effect waves-light btn deleteBtnComment" data-comment-index="<%= index %>" data-comment-id="<%= comment._id %>">Delete</button>
-                    <% } %>
+                      <% if (isAuthenticated.username == comment.author) { %>
+                        <button id="editCommentButton_<%= index %>" class="waves-effect waves-light btn editBtnComment" data-comment-index="<%= index %>" onclick="editComment('<%= index %>')">Edit</button>
+                        <button id="saveCommentButton_<%= index %>" class="waves-effect waves-light btn saveBtnComment" data-comment-index="<%= index %>" onclick="saveEditedComment('<%= index %>', '<%= comment.comment %>', '<%= comment._id %>')" style="display: none;">Save</button>
+                        <button class="waves-effect waves-light btn deleteBtnComment" data-comment-index="<%= index %>" data-comment-id="<%= comment._id %>">Delete</button>
+                      <% } %>
+                    </div>
                   </div>
                 </div>
-              </div>
-            <% }); %>
+              <% }); %>
+            <% } %>
+
+            <!-- Comment field for authenticated users -->
+            <% if (isAuthenticated.value) { %>
+              <form action="/questions/add/comment" method="POST" id="commentForm">
+                <div class="input-field">
+                  <textarea id="comment" name="comment" placeholder="Your comment" rows="4" cols="50" required></textarea>
+                </div>
+                <button type="submit" class="btn">Submit Comment</button>
+              </form>
+            <% } %>
+
+          <% } else { %>
+            <p>No question available.</p>
           <% } %>
 
-          <!-- Comment field for authenticated users -->
-          <% if (isAuthenticated.value) { %>
-            <form action="/questions/add/comment" method="POST" id="commentForm">
-              <div class="input-field">
-                <textarea id="comment" name="comment" placeholder="Your comment" rows="4" cols="50" required></textarea>
-              </div>
-              <button type="submit" class="btn">Submit Comment</button>
-            </form>
-          <% } %>
 
-        <% } else { %>
-          <p>No question available.</p>
-        <% } %>
-
-
-        <% function timeSince(date) {
-          const currentDate = new Date();
-          const pastDate = new Date(date);
-        
-          const years = currentDate.getFullYear() - pastDate.getFullYear();
-          const months = (currentDate.getMonth() - pastDate.getMonth()) + (years * 12);
-          const days = currentDate.getDate() - pastDate.getDate();
-        
-          let result = '';
-        
-          if (months > 0) {
-              result += `${months} ${months === 1 ? 'month' : 'months'}`;
-          }
-        
-          if (days > 0) {
-              result += `${result ? ', ' : ''}${days} ${days === 1 ? 'day' : 'days'}`;
-          }
-        
-          return result ? result + ' ago' : 'today';
-        } %>
-
-      </div>
+          <% function timeSince(date) {
+            const currentDate = new Date();
+            const pastDate = new Date(date);
+          
+            const years = currentDate.getFullYear() - pastDate.getFullYear();
+            const months = (currentDate.getMonth() - pastDate.getMonth()) + (years * 12);
+            const days = currentDate.getDate() - pastDate.getDate();
+          
+            let result = '';
+          
+            if (months > 0) {
+                result += `${months} ${months === 1 ? 'month' : 'months'}`;
+            }
+          
+            if (days > 0) {
+                result += `${result ? ', ' : ''}${days} ${days === 1 ? 'day' : 'days'}`;
+            }
+          
+            return result ? result + ' ago' : 'today';
+          } %>
     </div>
-  </div>
+    <%- include("./partials/footer") %>
 
-  <script type="module" src="/javascripts/question.js"></script>
-</body>
+    <script type="module" src="/javascripts/question.js"></script>
+  </body>
 </html>

@@ -12,8 +12,8 @@ div {
 
 /* label underline focus color */
 #question:focus, #title:focus {
-    border-bottom: 1px solid var(--focus-color) !important;
-    box-shadow: 0 1px 0 0 var(--focus-color) !important;
+    border-bottom: 1px solid var(--accent-color-light) !important;
+    box-shadow: 0 1px 0 0 var(--accent-color-light) !important;
 }
 
 textarea {
@@ -28,5 +28,7 @@ textarea {
 }
 
 h4 {
-    margin-bottom: 30px !important; /* Adjust the margin value as needed */
+    margin-bottom: 30px !important;
+    color: var(--font-color-2)
 }
+

@@ -5,7 +5,7 @@
 
   <body>
     <%- include("./partials/navbarGuest") %>
-    <div class="pageContainer">
+    <div class="pageContainer" id="authorizationContainer">
 
       <!-- Sign up form -->
       <form action="/signUp" method="POST" id="signUpForm">
@@ -53,8 +53,9 @@
         </div>
       </form>
     </div>
+    <%- include("./partials/footer") %>
 
-  <script type="text/javascript" src="/javascripts/signUp.js"></script>
+  <script type="module" src="/javascripts/signUp.js"></script>
 
   </body>
 </html>

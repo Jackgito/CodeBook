@@ -10,25 +10,26 @@
       <%- include('./partials/navbarGuest') %>
     <% } %>
       
-      <div class="pageContainer">
-          <h4>Ask a public question</h4>
+    <div class="pageContainer">
+      <h4>Ask a public question</h4>
 
-          <form id="questionForm" method="POST">
-            <input type="hidden" id="username" name="username" value="<%= isAuthenticated.user %>">
+      <form id="questionForm" method="POST">
+        <input type="hidden" id="username" name="username" value="<%= isAuthenticated.user %>">
 
-            <div class="input-field">
-              <label for="questionTitle">Title:</label>
-              <input id="questionTitle" name="questionTitle" type="text" required>
-            </div>
-          
-            <div class="input-field">
-              <textarea id="question" name="question" placeholder="Question" required rows="20" cols="50"></textarea>
-            </div>
-          
-            <button type="submit" class="btn">Submit</button>
-          </form>
-
-      </div>
-      <script src="/javascripts/newQuestion.js"></script>
+        <div class="input-field">
+          <label for="questionTitle">Title:</label>
+          <input id="questionTitle" name="questionTitle" type="text" required>
+        </div>
+      
+        <div class="input-field">
+          <textarea id="question" name="question" placeholder="Question" required rows="20" cols="50"></textarea>
+        </div>
+      
+        <button type="submit" class="btn">Submit</button>
+      </form>
+    </div>
+    
+    <%- include("./partials/footer") %>
+    <script src="/javascripts/newQuestion.js"></script>
   </body>
 </html>

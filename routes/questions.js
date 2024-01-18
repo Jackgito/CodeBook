@@ -235,4 +235,18 @@ router.post('/questions/get/totalVotes', async (req, res) => {
   }
 });
 
+router.get('/checkTitle', async (req, res) => {
+  const title = req.query.title;
+
+  try {
+    const existingQuestion = await Question.findOne({ title });
+    const isUnique = !existingQuestion;
+
+    res.json({ isUnique });
+  } catch (error) {
+    console.error('Error checking title uniqueness:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 module.exports = router;

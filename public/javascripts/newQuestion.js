@@ -1,27 +1,33 @@
 document.addEventListener('DOMContentLoaded', function () {
+  document.getElementById('questionForm').addEventListener('submit', async function(event) {
+    // Prevent the default form submission
+    event.preventDefault();
 
-    document.getElementById('questionForm').addEventListener('submit', function(event) {
-        // Prevent the default form submission
-        event.preventDefault();
-    
-        // Get the values entered in the title and question input fields
-        const title = document.getElementById('questionTitle').value;
-        const question = document.getElementById('question').value;
-    
-        // Check if title and question exist
-        if (title.trim() === '' || question.trim() === '') {
-          console.error('Title and question are required!');
-          return;
-        }
-    
-        // Encode the title using encodeURIComponent
-        const encodedTitle = encodeURIComponent(title);
-        console.log("Title: ", title, "Encoded: ", encodedTitle);
-    
-        // Set the form action dynamically
-        this.action = '/questions/' + encodedTitle;
-    
-        // Now submit the form
-        this.submit();
-      });
+    // Check if the title is unique before submitting the form
+    const title = document.getElementById('questionTitle').value.trim();
+    const isTitleUnique = await checkTitleUniqueness(title);
+
+    if (isTitleUnique) {
+      const questionForm = document.getElementById('questionForm');
+      const encodedTitle = encodeURIComponent(title);
+      questionForm.action = '/questions/' + encodedTitle;
+      questionForm.submit();
+    } else {
+      M.toast({ html: 'Title must be unique.', classes:'red' });
+    }
+  });
+
+
+  async function checkTitleUniqueness(title) {
+    // Perform an asynchronous request to your server to check title uniqueness
+    try {
+      const response = await fetch(`/checkTitle?title=${encodeURIComponent(title)}`);
+      const data = await response.json();
+
+      return data.isUnique;
+    } catch (error) {
+      console.error('Error checking title uniqueness:', error);
+      return false;
+    }
+  }
 });

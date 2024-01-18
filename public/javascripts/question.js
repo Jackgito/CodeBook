@@ -3,6 +3,7 @@ import { getCommentUserVote, getQuestionUserVote, checkMaxVotes, getTotalComment
 import { updateQuestionVotesToDB, updateCommentVotesToDB, saveCommentToDB } from './questionFunctions/updateDB.js';
 
 document.addEventListener('DOMContentLoaded', function() {
+
   const userID = document.getElementById('userID').getAttribute('userID');
   const questionID = document.getElementById("questionID").getAttribute('questionID');
   const question = document.getElementById('question');
