@@ -2,8 +2,6 @@
 <html lang="en">
   <%- include("./partials/head", { title: "Edit question", stylesheet: "../../stylesheets/newQuestion.css" }) %>
   <body>
-    <input id="questionURL" type="hidden" name="questionURL" value="<%= question.url %>">
-
     <% if (typeof isAuthenticated.value === 'boolean' && isAuthenticated.value) { %>
       <%- include('./partials/navbarLoggedIn') %>
     <% } else { %>
@@ -13,7 +11,7 @@
     <div class="pageContainer">
       <h4>Edit question</h4>
     
-      <form id="questionForm" action="/questions/edit/<%= question.url %>" onsubmit="submitForm(event)" method="POST">
+      <form id="questionForm" method="POST">
     
         <div class="input-field">
           <label for="questionTitle">Title:</label>

@@ -39,7 +39,3 @@
   background-color: var(--accent-color) !important;
   border-radius: 4px;
 }
-
-.pagination a.active {
-  background-color: var(--accent-color-light);
-}

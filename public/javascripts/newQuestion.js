@@ -17,7 +17,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
-
   async function checkTitleUniqueness(title) {
     // Perform an asynchronous request to your server to check title uniqueness
     try {

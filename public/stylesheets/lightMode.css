@@ -1,7 +1,7 @@
 :root[theme='light'] {
   --primary-color: #ffffff;
   --secondary-color: #4ea6d2;
-  --accent-color: #4c6daf;
+  --accent-color: #5679c1;
   --accent-color-dark: #3f5a8f;
   --accent-color-light: #8fd8ff;
   --font-color: rgb(255, 255, 255);
@@ -99,5 +99,9 @@
   
   textarea {
     color: black !important;
+  }
+
+  .pagination a.active {
+    background-color: var(--accent-color-dark) !important;
   }
 }

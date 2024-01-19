@@ -139,7 +139,6 @@ router.post('/questions/update/votes', async (req, res) => {
   }
 });
 
-
 // Delete question 
 router.delete('/questions/delete/:questionID', async (req, res) => {
   const questionID = req.params.questionID;
