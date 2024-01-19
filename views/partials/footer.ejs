@@ -1,8 +1,8 @@
 <link rel="stylesheet" href="/stylesheets/footer.css">
-<div class="footer">
+<footer>
 
     <!-- Switch -->
-    <div class="switch" id="darkModeSwitch">
+    <div class="switch" id="theme-switch">
       <p>Dark mode</p>
       <label>
         Off
@@ -12,30 +12,48 @@
       </label>
     </div>
 
-</div>
+  </footer>
 
 <script>
-  // Dark/light mode
-  document.addEventListener('DOMContentLoaded', function() {
+// Dark/light mode
+document.addEventListener('DOMContentLoaded', function() {
 
-  const darkModeSwitch = document.querySelector('.switch input[type="checkbox"]');
-  if (localStorage.getItem('darkMode') === "true") {
-    darkModeSwitch.checked = true;
+  // Change Theme Setting with a Switch
+  const currentTheme = localStorage.getItem('theme');
+  const switchElem = document.querySelector('#theme-switch');
+  const switchCheckbox = switchElem.querySelector('input');
+  const likeButtonElement = document.getElementById('likeButton');
+
+  const toggleTheme = () => {
+    if (switchCheckbox.checked) {
+      // Dark Theme
+      document.documentElement.setAttribute('theme', 'dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      // Light Theme
+      document.documentElement.setAttribute('theme', 'light');
+      localStorage.setItem('theme', 'light');
+    }
+    // Update the votes after the color has resetted at the question page
+  };
+
+  if (switchElem) {
+    // Load
+    if (currentTheme === "dark") {
+      switchCheckbox.checked = true;
+    } else {
+      switchCheckbox.checked = false;
+    }
+
+    // Change
+    switchElem.addEventListener('click', e => {
+      e.preventDefault();
+      switchCheckbox.checked = !switchCheckbox.checked;
+      toggleTheme();
+    });
+
+    // Handle initial theme setting
+    toggleTheme();
   }
-
-  function toggleDarkMode() {
-    const isDarkMode = darkModeSwitch.checked;
-    localStorage.setItem('darkMode', isDarkMode);
-    applyDarkModeStyles(isDarkMode);
-  }
-
-  function applyDarkModeStyles(isDarkMode) {
-    const stylesheetLink = document.getElementById('headStylesheet');
-    const darkModeStylesheet = '/stylesheets/darkMode.css';
-    const lightModeStylesheet = '/stylesheets/lightMode.css';
-    stylesheetLink.href = isDarkMode ? darkModeStylesheet : lightModeStylesheet;
-  }
-
-  darkModeSwitch.addEventListener('change', toggleDarkMode);
-  });
+});
 </script>

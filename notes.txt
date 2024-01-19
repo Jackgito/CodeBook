@@ -2,6 +2,9 @@ TODO:
 Fix delay in voting
 Fix autocomplete style
 Fix color flicker when refreshed
+404 page
+
+HTML loading spinner
 
 // MongoDB
 Codebook

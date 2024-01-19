@@ -29,6 +29,6 @@ textarea {
 
 h4 {
     margin-bottom: 30px !important;
-    color: var(--font-color-2)
+    color: var(--font-color-2) !important;
 }
 

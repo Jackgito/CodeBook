@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   if (userAuthenticated == "true") {setInitialButtonColors(questionID, userID)};
 
+  // This is used to fix frontend bug when voting
   function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }

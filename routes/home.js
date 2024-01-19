@@ -5,6 +5,7 @@ router.get('/', async (req, res) => {
   try {
     const questions = await Question.find().sort({ createdAt: 'desc' });
     const isAuthenticated = req.isAuthenticated()
+    const darkMode = req.cookies.darkMode;
     res.render('home', { questions, isAuthenticated});
     } catch (error) {
     console.error('Error rendering home page:', error);

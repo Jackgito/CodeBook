@@ -7,8 +7,12 @@
   font-size: 1.4rem;
 }
 
+.nav-wrapper {
+  background-color: var(--secondary-color) !important;
+}
+
 .sidenav {
-  background-color: var(--secondary-color);
+  background-color: var(--secondary-color) !important;
   width: 180px;
   i {
     margin: 0 !important;

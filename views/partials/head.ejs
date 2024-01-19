@@ -1,9 +1,22 @@
-<!-- views/layout.ejs -->
 <head>
+  <!-- Global styling -->
+  <link rel="stylesheet" href="/stylesheets/darkMode.css">
+  <link rel="stylesheet" href="/stylesheets/lightMode.css">
+  <script>
+    const theme = localStorage.getItem('theme');
+    if (theme) {
+      document.documentElement.setAttribute('theme', theme)
+    } else {
+      document.documentElement.setAttribute('theme', "light")
+    }
+  </script>
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><%= title %></title>
+
+  <!-- Navbar styling -->
+  <link rel="stylesheet" href="/stylesheets/navbar.css">
   
   <!-- Poppins font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,30 +29,14 @@
   <!-- Materialize -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> <!-- Get icons  -->  
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">  
   
   <!-- Tab image / Favicon -->
   <link rel="icon" href="/images/favicon.ico" type="image/x-icon"> 
 
-  <!-- Global styling -->
-  <script type="module">
-    // Create a new link element
-    const stylesheetLink = document.createElement("link");
-    stylesheetLink.id = "headStylesheet";
-    stylesheetLink.rel = "stylesheet";
-
-    // Check dark mode status and set the appropriate href
-    if (localStorage.getItem('darkMode') === "true") {
-      stylesheetLink.href = "/stylesheets/darkMode.css";
-    } else {
-      stylesheetLink.href = "/stylesheets/lightMode.css";
-    }
-
-    // Append the link element to the head
-    document.head.appendChild(stylesheetLink);
-  </script>
-
+  <!-- Dynamic stylesheet provided by the EJS file -->
   <link rel="stylesheet" href="/stylesheets/head.css">
+  
   <% if (stylesheet) { %>
     <link rel="stylesheet" href="<%= stylesheet %>">
   <% } %>

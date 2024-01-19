@@ -18,10 +18,9 @@
   color: red !important;
 }
 
-
 button {
   display: inline-block;
-  background-color: var(--accent-color);
+  color: var(--font-color) !important;
   padding: 10px 20px;
   font-weight: bold;
   text-align: center;

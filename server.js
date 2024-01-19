@@ -29,7 +29,7 @@ app.use('/', questionsRouter);
 app.use('/', commentsRouter);
 app.use('/', profileRouter);
 
-const uri = "mongodb+srv://Codebook:D7SeTmolljnr4wKb@codebookcluster.6fowij0.mongodb.net/?retryWrites=true&w=majority"
+const uri = `mongodb+srv://Codebook:${process.env.MONGODB_PASSWORD}@codebookcluster.6fowij0.mongodb.net/?retryWrites=true&w=majority`
 
 // Connect to MongoDB database
 mongoose.connect(uri)
