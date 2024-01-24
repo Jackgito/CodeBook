@@ -1,0 +1,11 @@
+* {
+  color:black !important;
+}
+
+.pageContainer {
+  margin-top: 300px;
+  margin-bottom: auto;
+  text-align: center;
+  padding: 50px;
+}
+

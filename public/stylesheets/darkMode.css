@@ -3,12 +3,12 @@
   --primary-color: #2a2a2a;
   --secondary-color: #222222;
   --accent-color: #5daed3;
-  --accent-color-light: #6ecaf5;
+  --accent-color-light: #7bd0f8;
   --accent-color-dark: #4e87a1;
   --font-color: white;
 
   * {
-    color: var(--font-color);
+    color: var(--font-color) !important;
   }
   
   body {
