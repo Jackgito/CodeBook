@@ -38,18 +38,13 @@ CodeBook is a Stack Overflow clone designed for users to share code snippets, en
 10. **404 Page:**
     - A 404 page exists on the website for improved user experience.
 
-## Installation Guidelines
+## Website Access
 
-1. Access the website at [CodeBook on Render](https://codebook-4k27.onrender.com/). It might take a minute or two to start the web server.
+Access the website at [CodeBook on Render](https://codebook-4k27.onrender.com/). It might take a minute or two to start the web server.
    You can create own account, or use the test account:
    Email: test@mail.com
    Password: password1
 
-2. If the webpage is not loading in few minutes, follow these instructions:
-   - Download and unzip files from this repository.
-   - Navigate to the root folder in your terminal.
-   - Run `npm ci` to install required dependencies (Requires Node).
-   - Start the application with `npm start`.
 
 ## Pictures
 
